@@ -1,7 +1,4 @@
-# Project Title
-
-ODYM-RECC Cu
-
+# ODYM-RECC Cu
 
 This is a stand-alone dynamic material system model of the copper cycle which eventually will be integrated in the ODYM-RECC Project (https://github.com/IndEcol/ODYM). 
 The model is created to model the copper demand for the Electricity Generation Sector based on output data from the Integrated Assessent Model MESSAGE developed at the 
