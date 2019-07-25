@@ -37,8 +37,13 @@ import seaborn as sns
 import xlsxwriter
 import openpyxl
 
-#os.chdir('C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo')
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 import RECC_Paths # Import path file
+
+
 
 DFilePath = os.path.join(RECC_Paths.rawdata_pathIAM,'MESSAGE')
 ResultsPath= os.path.join(RECC_Paths.rawdata_pathIAM,'Results')
@@ -511,48 +516,26 @@ col_future_demandj = " ".join(str(x) for x in col_future_demand)
 col_future_demands = col_future_demandj.split()
    
 df_future_demand = ddCAexp15[col_future_demands]   
-
-
-
 df_future_demandI = df_future_demand.reset_index(level=['REGION', 'MODEL','SCENARIO','VARIABLE'])
-
-
 future_demand = pd.DataFrame(df_future_demandI)
-
-book=openpyxl.load_workbook(DFilePath+'\\2_S_RECC_FinalProducts_Future_EGT_V1.0.xlsx' )
-        
-writer=pd.ExcelWriter(DFilePath+'\\2_S_RECC_FinalProducts_Future_EGT_V1.0.xlsx', engine='openpyxl')
-
+book=openpyxl.load_workbook(DFilePath+'\\2_S_RECC_FinalProducts_Future_EGT_V1.0.xlsx' )       
+writer=pd.ExcelWriter(DFilePath+'\\1_F_RECC_FinalProducts_Future_industry_V1.0.xlsx', engine='openpyxl')
 writer.book=book
-
 writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
-
-
 future_demand.to_excel(writer, sheet_name='Sheet1',startcol=0,startrow=0,index=False,header=True)
-
-
-writer.save()
+#writer.save()
 
 
 ### Safe Copper Intensity dataframe RECC format
 
 df_CopperIntensity = df_CopperIntensity.reset_index(level=['REGION', 'MODEL','SCENARIO','VARIABLE'])
-
 CopperIntensity = pd.DataFrame(df_CopperIntensity)
-
-book=openpyxl.load_workbook(DFilePath+'\\3_MC_RECC_EGT_V1.0.xlsx' )
-        
-writer=pd.ExcelWriter(DFilePath+'\\3_MC_RECC_EGT_V1.0.xlsx', engine='openpyxl')
-
+book=openpyxl.load_workbook(DFilePath+'\\3_MC_RECC_EGT_V1.0.xlsx' )      
+writer=pd.ExcelWriter(DFilePath+'\\3_MC_RECC_industry_V1.0.xlsx', engine='openpyxl')
 writer.book=book
-
 writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
-
-
 CopperIntensity.to_excel(writer, sheet_name='values',startcol=0,startrow=0,index=False,header=True)
-
-
-writer.save()
+#writer.save()
 
 
 
@@ -560,34 +543,26 @@ writer.save()
 #### Save Lifetime Dataframe in RECC format
 
 Lifetime= DF.loc[DF['VARIABLE'].isin(Lft_EGList_MSG) & DF['SCENARIO'].isin(Scenario_M) & DF['MODEL'].isin(Model_M)] # extract emissions from energy supply, in Mt CO2/yr
-
 [Lifetime['VARIABLE'].replace(   to_replace=[Lft_EGList_MSG[i]],value=EG_List_ODYM[EGListLookup[i]],   inplace=True) for i in range(0,len(Lft_EGList_MSG))]    
 [Lifetime['MODEL'].replace(   to_replace=[Model_M[i]],value=Scenario_R[i],   inplace=True) for i in range(0,3)]
 [Lifetime['SCENARIO'].replace(to_replace=[Scenario_M[i]],value=RCPScen_R[i], inplace=True) for i in range(0,2)]
 
 dLifetime = Lifetime.groupby(['REGION', 'MODEL','SCENARIO','VARIABLE']).max()
 
-dLifetime['copper electric grade'] = dLifetime.max(axis=1)
+dLifetime['All years'] = dLifetime.max(axis=1)
 
-RECC_Lifetime= pd.DataFrame(dLifetime['copper electric grade'])
-
-
+RECC_Lifetime= pd.DataFrame(dLifetime['All years'])
 RECC_LifetimeI = RECC_Lifetime.reset_index(level=['REGION', 'MODEL','SCENARIO','VARIABLE'])
-
-
-book=openpyxl.load_workbook(DFilePath+'\\3_LT_RECC_ProductLifetime_EGT_V1.0.xlsx' )
-        
-writer=pd.ExcelWriter(DFilePath+'\\3_LT_RECC_ProductLifetime_EGT_V1.0.xlsx', engine='openpyxl')
-
+book=openpyxl.load_workbook(DFilePath+'\\3_LT_RECC_ProductLifetime_EGT_V1.0.xlsx' )      
+writer=pd.ExcelWriter(DFilePath+'\\3_LT_RECC_ProductLifetime_industry_V1.0.xlsx', engine='openpyxl')
 writer.book=book
-
 writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
 
 
 RECC_LifetimeI.to_excel(writer, sheet_name='values',startcol=0,startrow=0,index=False,header=True)
 
 
-writer.save()
+#writer.save()
 
 
 
@@ -601,7 +576,8 @@ col_final_products_2015s = col_final_products_2015j.split()
 
 df_final_products_2015 = ddCAexp15[col_final_products_2015s] 
 
-df_final_products_2015['0']=2015
+
+df_final_products_2015.insert(0, '', 2015)
 
 #Unstack= ddCAexp15.unstack(level=[3])
 #Unstack2= Unstack.unstack(level=[2])
@@ -616,7 +592,7 @@ df_final_products_2015_merged = df_final_products_20152.merge(RECC_Lifetime, on 
 
 book=openpyxl.load_workbook(DFilePath+'\\2_S_RECC_FinalProducts_2015_EGT_V1.0.xlsx' )
         
-writer=pd.ExcelWriter(DFilePath+'\\2_S_RECC_FinalProducts_2015_EGT_V1.0.xlsx', engine='openpyxl')
+writer=pd.ExcelWriter(DFilePath+'\\2_S_RECC_FinalProducts_2015_industry_V1.0.xlsx', engine='openpyxl')
 
 writer.book=book
 
@@ -626,6 +602,6 @@ writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
 df_final_products_2015_merged.to_excel(writer, sheet_name='values',startcol=0,startrow=0,index=False,header=True)
 
 
-writer.save()
+#writer.save()
 # The end.
 
