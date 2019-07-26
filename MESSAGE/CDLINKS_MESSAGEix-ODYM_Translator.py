@@ -43,10 +43,10 @@ os.chdir(dname)
 
 import imp
 
+
+
 #imp.reload( RECC_Paths )
-
-
-#import RECC_Paths # Import path file
+import RECC_Paths # Import path file
 
 
 
@@ -66,12 +66,12 @@ Regions_R  = ['R32CAN','R32CHN','R32EU12-M','R32IND','R32JPN','R32USA','France',
 Time_R     = np.arange(2000,2101,1)
 TimeL_R    = [i for i in Time_R] 
 # Read data into pandas dataframe:
-DF = pd.read_csv(os.path.join(DFilePath,'CD_Links_SSP1-3.csv'), sep = ',', encoding = 'unicode_escape')
+DF = pd.read_csv(os.path.join(DFilePathMESSAGE,'CD_Links_SSP1-3.csv'), sep = ',', encoding = 'unicode_escape')
 
 
 DF.head(5)
 
-Path_Copper_GW = os.path.join(DFilePath) + '\\Copper_MI.xlsx'   ##Import Data on Material Intensity of kommer [kt/GW]
+Path_Copper_GW = os.path.join(DFilePathMESSAGE) + '\\Copper_MI.xlsx'   ##Import Data on Material Intensity of kommer [kt/GW]
 CopperGW_WB_df = pd.read_excel(Path_Copper_GW)
 
 CopperGW_WB_df.set_index(CopperGW_WB_df['VARIABLE'])
@@ -574,15 +574,16 @@ writer.save()
 #### Save final products 2015 in RECC format
 
 
-col_final_products_2015 = np.arange(1990,2015)
+col_final_products_2015 = np.arange(1986,2016)
 col_final_products_2015j = " ".join(str(x) for x in col_final_products_2015)
 col_final_products_2015s = col_final_products_2015j.split()
+
 
 
 df_final_products_2015 = ddCAexp15[col_final_products_2015s] 
 
 
-df_final_products_2015.insert(0, '', 2015)
+df_final_products_2015.insert(0, 'Stock of year', 2015)
 
 #Unstack= ddCAexp15.unstack(level=[3])
 #Unstack2= Unstack.unstack(level=[2])
@@ -590,7 +591,56 @@ df_final_products_2015.insert(0, '', 2015)
 df_final_products_20152 = df_final_products_2015.reset_index(level=['REGION', 'MODEL','SCENARIO','VARIABLE'])
 
 
-df_final_products_2015_merged = df_final_products_20152.merge(RECC_Lifetime, on = ['REGION', 'MODEL','SCENARIO','VARIABLE'])
+
+#### Set stock from year zero if lifetime is smaller than inflow year
+#df_final_products_2015_merged = df_final_products_20152.merge(RECC_Lifetime, on = ['REGION', 'MODEL','SCENARIO','VARIABLE'])
+
+#
+
+List_Lifetime_30 = list()
+List_Lifetime_20 = list()
+List_Lifetime_25 = list()
+
+for i in range(0,len(CA_List_ODYM)): 
+ if RECC_LifetimeI['All years'].loc[i] == 30: 
+    List_Lifetime_30.append(RECC_LifetimeI['VARIABLE'].loc[i])
+ if RECC_LifetimeI['All years'].loc[i] == 25:  
+    List_Lifetime_25.append(RECC_LifetimeI['VARIABLE'].loc[i])
+ if RECC_LifetimeI['All years'].loc[i] == 20:  
+    List_Lifetime_20.append(RECC_LifetimeI['VARIABLE'].loc[i])
+
+
+idx30 =  df_final_products_20152.loc[df_final_products_20152['VARIABLE'].isin(List_Lifetime_30)]
+idx25 =  df_final_products_20152.loc[df_final_products_20152['VARIABLE'].isin(List_Lifetime_25)]
+idx20 =  df_final_products_20152.loc[df_final_products_20152['VARIABLE'].isin(List_Lifetime_20)]
+
+ind30i = idx30.index
+ind25i = idx25.index
+ind20i = idx20.index
+
+
+for c in col_1990s:
+    [df_final_products_20152[c].replace(to_replace=df_final_products_20152[c].loc[i],value=0,   inplace=True) for i in ind20i]    
+for c in col_1995s:
+    [df_final_products_20152[c].replace(to_replace=df_final_products_20152[c].loc[i],value=0,   inplace=True) for i in ind20i]    
+for c in col_1990s:
+    [df_final_products_20152[c].replace(to_replace=df_final_products_20152[c].loc[i],value=0,   inplace=True) for i in ind25i]    
+
+
+
+
+#for df_final_products_20152.loc[df_final_products_20152['VARIABLE'].isin(List_Lifetime_25):
+ #   df_final_products_20152[col_1990].[i]
+#            df_final_products_2015_merged[c].loc[i] = 0
+#            if df_final_products_2015_merged['All years'].loc[i] <= 25:
+#                     for c in col_1995s:
+#                         df_final_products_2015_merged[c].loc[i] = 0
+#                         if df_final_products_2015_merged['All years'].loc[i] <= 20:
+#                                 for c in col_2000s:
+#                                     df_final_products_2015_merged[c].loc[i] = 0
+#                         
+
+
 
 
 
@@ -604,7 +654,7 @@ writer.book=book
 writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
 
 
-df_final_products_2015_merged.to_excel(writer, sheet_name='values',startcol=0,startrow=0,index=False,header=True)
+df_final_products_20152.to_excel(writer, sheet_name='values',startcol=0,startrow=0,index=False,header=True)
 
 
 writer.save()
