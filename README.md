@@ -1,4 +1,4 @@
-# ODYM-RECC Cu
+# ODYM-RECC-Cu
 
 
 This is a stand-alone dynamic material system model of the copper cycle which eventually will be integrated in the ODYM-RECC Project (https://github.com/IndEcol/ODYM). 

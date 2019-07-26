@@ -43,10 +43,10 @@ os.chdir(dname)
 
 import imp
 
-imp.reload( RECC_Paths )
+#imp.reload( RECC_Paths )
 
 
-import RECC_Paths # Import path file
+#import RECC_Paths # Import path file
 
 
 
