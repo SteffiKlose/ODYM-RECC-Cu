@@ -7,9 +7,9 @@ This is the RECC model path file. RECC will use the paths specified here to sear
 
 current = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu'
 
-odym_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\ODYM-Repo\\ODYM\\odym\\modules\\' 
-data_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\data\\CURRENT' 
-results_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\RECC_Results' 
+odym_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\ODYM-Repo\\ODYM\\odym\\modules' 
+data_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\Data' 
+results_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\Results' 
 rawdata_pathMESSAGE = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\MESSAGE' 
 rawdata_pathIMAGE = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\IMAGE' 
 rawdata_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu' 

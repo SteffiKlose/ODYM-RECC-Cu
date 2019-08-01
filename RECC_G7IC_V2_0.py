@@ -38,7 +38,11 @@ from scipy.interpolate import interp1d
 import pylab
 import pickle
 
+import imp
+import sys
+sys.path.append("C:/Users/sklose/Documents/ODYM-RECC-Repos/RECC-Cu-Repo/ODYM-RECC Cu/")
 import RECC_Paths # Import path file
+importlib.reload(RECC_Paths)
 
 
 #import re
@@ -50,7 +54,7 @@ __version__ = str('1.1')
 sys.path.insert(0, os.path.join(os.path.join(RECC_Paths.odym_path,'odym'),'modules'))
 ### 1.1.) Read main script parameters
 # Mylog.info('### 1.1 - Read main script parameters')
-ProjectSpecs_Name_ConFile = 'RECC_Config_V2_0.xlsx'
+ProjectSpecs_Name_ConFile = RECC_Paths.rawdata_path + '\\RECC_Config_V2_0.xlsx'
 Model_Configfile = xlrd.open_workbook(ProjectSpecs_Name_ConFile)
 ScriptConfig = {'Model Setting': Model_Configfile.sheet_by_name('Config').cell_value(3,3)}
 Model_Configsheet = Model_Configfile.sheet_by_name(ScriptConfig['Model Setting'])
@@ -63,6 +67,7 @@ ScriptConfig['Logging_Verbosity'] = Model_Configsheet.cell_value(DebugCounter,3)
 ProjectSpecs_User_Name     = getpass.getuser()
 
 # import packages whose location is now on the system path:    
+sys.path.append(RECC_Paths.odym_path)
 import ODYM_Classes as msc # import the ODYM class file
 importlib.reload(msc)
 import ODYM_Functions as msf  # import the ODYM function file
@@ -114,7 +119,7 @@ Mylog.debug('----\n')
 ### 1.3) Organize model output folder and logger
 Mylog.info('### 1.3 Organize model output folder and logger')
 #Copy Config file and model script into that folder
-shutil.copy(ProjectSpecs_Name_ConFile, os.path.join(ProjectSpecs_Path_Result, ProjectSpecs_Name_ConFile))
+shutil.copy(ProjectSpecs_Name_ConFile, os.path.join(ProjectSpecs_Path_Result + '\\RECC_Config_V2_0.xlsx'))
 shutil.copy(Name_Script + '.py'      , os.path.join(ProjectSpecs_Path_Result, Name_Script + '.py'))
 
 #####################################################
