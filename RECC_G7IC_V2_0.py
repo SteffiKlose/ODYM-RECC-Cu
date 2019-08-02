@@ -244,11 +244,19 @@ mr             = 0 # reference region for GHG prices and intensities (Default: 0
 LEDindex       = IndexTable.Classification[IndexTable.index.get_loc('Scenario')].Items.index('LED')
 SSP1index      = IndexTable.Classification[IndexTable.index.get_loc('Scenario')].Items.index('SSP1')
 SSP2index      = IndexTable.Classification[IndexTable.index.get_loc('Scenario')].Items.index('SSP2')
-SectorList     = eval(ScriptConfig['SectorSelect'])
-Sector_pav_loc = 0 # index of pass. vehs. in sector list.
-Sector_pav_rge = np.arange(0,6,1) # index range of pass. vehs. in product list.
-Sector_reb_loc = 1 # index of res. build. in sector list.
-Sector_reb_rge = np.array([22,23,24,25,26,27,28,29,34]) # index range of res. builds. in product list.
+SectorList     = ScriptConfig['SectorSelect']
+#Sector_pav_loc = 0 # index of pass. vehs. in sector list.
+#Sector_pav_rge = np.arange(0,6,1) # index range of pass. vehs. in product list.
+#Sector_reb_loc = 1 # index of res. build. in sector list.
+#Sector_reb_rge = np.array([22,23,24,25,26,27,28,29,34]) # index range of res. builds. in product list.
+
+Sector_ind_loc = 0 # index of industry in sector list.
+Sector_ind_rge = np.concatenate([np.arange(72,79,1),np.arange(80,83,1),[85,87,88,89]]) # index range of industry (electricity generation techlologies) in product list.
+
+Sector_app_loc = 1 # index of applications in sector list.
+Sector_app_rge = np.arange(90,102,1)
+
+
 Service_Driving= 3
 Material_Wood  = 9
 Service_Resbld = np.array([0,1,2])

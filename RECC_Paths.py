@@ -9,6 +9,7 @@ current = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-REC
 
 odym_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\ODYM-Repo\\ODYM\\odym\\modules' 
 data_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\Data' 
+data_path_raw = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\Data\\Raw' 
 results_path = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\Results' 
 rawdata_pathMESSAGE = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\MESSAGE' 
 rawdata_pathIMAGE = 'C:\\Users\\sklose\\Documents\\ODYM-RECC-Repos\\RECC-Cu-Repo\\ODYM-RECC Cu\\IMAGE' 

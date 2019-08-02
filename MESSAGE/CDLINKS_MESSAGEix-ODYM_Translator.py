@@ -51,7 +51,7 @@ import RECC_Paths # Import path file
 
 
 DFilePathMESSAGE = RECC_Paths.rawdata_pathMESSAGE
-ResultsPath= os.path.join(RECC_Paths.rawdata_path,'Data')
+ResultsPath= os.path.join(RECC_Paths.rawdata_path,'Data','Raw')
 # Define indices for MESSAGE data
 Regions_M  = ['AFR','CPA','EEU','FSU','LAC','MEA','NAM','PAO','PAS','SAS','WEU','World']
 Model_M    = ['CD_Links_SSP1_v2','CD_Links_SSP2_v2','CD_Links_SSP3_v2']
@@ -204,7 +204,7 @@ CA_List_ODYM = ['Capacity additions solar photovoltaic power plant',
          #  'light oil combined cycle',
             'Capacity additions gas combined cycle power plant',
             'Capacity additions advanced coal power plant with CCS',
-            'Capacity additions IGCC power plant with CCS',
+            'Capacity additions coal power plant with CCS',
             'Capacity additions biomass power plant with CCS',
             'Capacity additions gas combined cycle power plant with CCS',
           #  'storage technologies'
@@ -523,8 +523,8 @@ col_future_demands = col_future_demandj.split()
 df_future_demand = ddCAexp15[col_future_demands]   
 df_future_demandI = df_future_demand.reset_index(level=['REGION', 'MODEL','SCENARIO','VARIABLE'])
 future_demand = pd.DataFrame(df_future_demandI)
-book=openpyxl.load_workbook(ResultsPath+'\\1_F_RECC_FinalProducts_Future_industry_V1.0.xlsx' )       
-writer=pd.ExcelWriter(ResultsPath+'\\1_F_RECC_FinalProducts_Future_industry_V1.0.xlsx', engine='openpyxl')
+book=openpyxl.load_workbook(ResultsPath+'\\1_F_RECC_FinalProducts_Future_industry_V1.0_raw.xlsx' )       
+writer=pd.ExcelWriter(ResultsPath+'\\1_F_RECC_FinalProducts_Future_industry_V1.0_raw.xlsx', engine='openpyxl')
 writer.book=book
 writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
 future_demand.to_excel(writer, sheet_name='Sheet1',startcol=0,startrow=0,index=False,header=True)
@@ -535,8 +535,8 @@ writer.save()
 
 df_CopperIntensity = df_CopperIntensity.reset_index(level=['REGION', 'MODEL','SCENARIO','VARIABLE'])
 CopperIntensity = pd.DataFrame(df_CopperIntensity)
-book=openpyxl.load_workbook(ResultsPath+'\\3_MC_RECC_industry_V1.0.xlsx' )      
-writer=pd.ExcelWriter(ResultsPath+'\\3_MC_RECC_industry_V1.0.xlsx', engine='openpyxl')
+book=openpyxl.load_workbook(ResultsPath+'\\3_MC_RECC_industry_V1.0_raw.xlsx' )      
+writer=pd.ExcelWriter(ResultsPath+'\\3_MC_RECC_industry_V1.0_raw.xlsx', engine='openpyxl')
 writer.book=book
 writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
 CopperIntensity.to_excel(writer, sheet_name='values',startcol=0,startrow=0,index=False,header=True)
@@ -558,8 +558,8 @@ dLifetime['All years'] = dLifetime.max(axis=1)
 
 RECC_Lifetime= pd.DataFrame(dLifetime['All years'])
 RECC_LifetimeI = RECC_Lifetime.reset_index(level=['REGION', 'MODEL','SCENARIO','VARIABLE'])
-book=openpyxl.load_workbook(ResultsPath+'\\3_LT_RECC_ProductLifetime_industry_V1.0.xlsx' )      
-writer=pd.ExcelWriter(ResultsPath+'\\3_LT_RECC_ProductLifetime_industry_V1.0.xlsx', engine='openpyxl')
+book=openpyxl.load_workbook(ResultsPath+'\\3_LT_RECC_ProductLifetime_industry_V1.0_raw.xlsx' )      
+writer=pd.ExcelWriter(ResultsPath+'\\3_LT_RECC_ProductLifetime_industry_V1.0_raw.xlsx', engine='openpyxl')
 writer.book=book
 writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
 
@@ -645,9 +645,9 @@ for c in col_1990s:
 
 
 
-book=openpyxl.load_workbook(ResultsPath+'\\2_S_RECC_FinalProducts_2015_industry_V1.0.xlsx' )
+book=openpyxl.load_workbook(ResultsPath+'\\2_S_RECC_FinalProducts_2015_industry_V1.0_raw.xlsx' )
         
-writer=pd.ExcelWriter(ResultsPath+'\\2_S_RECC_FinalProducts_2015_industry_V1.0.xlsx', engine='openpyxl')
+writer=pd.ExcelWriter(ResultsPath+'\\2_S_RECC_FinalProducts_2015_industry_V1.0_raw.xlsx', engine='openpyxl')
 
 writer.book=book
 
