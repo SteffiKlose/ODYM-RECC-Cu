@@ -408,7 +408,6 @@ if ScriptConfig['IncludeRecycling'] == 'False': # no recycling and remelting
 #Stocks_2016_resbuildings   = ParameterDict['2_S_RECC_FinalProducts_2015_resbuildings'].Values[0,:,:,:].sum(axis=0)
 #pCStocks_2016_resbuildings = np.einsum('gr,r->rg',Stocks_2016_resbuildings,1/ParameterDict['2_P_RECC_Population_SSP_32R'].Values[0,0,:,1]) 
  
-Stock_2016_EGT = ParameterDict['2_S_RECC_FinalProducts_2015_industry'].Values[0,:,:,:].sum(axis=0)
 #pStock_2016_EGT =
 
 Stock_2016_app = ParameterDict['2_S_RECC_FinalProducts_2015_industry'].Values[0,:,:,:].sum(axis=0)
@@ -634,8 +633,8 @@ for mS in range(0,NS):
                     SF_Array                    = np.zeros((Nc,Nc,NI,Nl)) # survival functions, by year, age-cohort, good, and region. PDFs are stored externally because recreating them with scipy.stats is slow.
                     
                     #Get historic stock at end of 2015 by age-cohort, and covert unit to Vehicles: million.
-                    TotalStock_UsePhase_Hist_ind = RECC_System.ParameterDict['2_S_RECC_FinalProducts_2015_industry'].Values[:,:,:,:,0,:]
-                    
+                    S_c_2015_ind = RECC_System.ParameterDict['2_S_RECC_FinalProducts_2015_industry'].Values[:,:,:,:,0,:]
+
                    
 #                    # 2) Include (or not) the RE strategies for the use phase:
 #                    # Include_REStrategy_MoreIntenseUse:
@@ -647,10 +646,14 @@ for mS in range(0,NS):
 #                            MIURamp[38::] = 0.8
 #                            MIURamp = np.convolve(MIURamp, np.ones((8,))/8, mode='valid')
 #                            TotalStockCurves_UsePhase_p = TotalStockCurves_UsePhase_p * np.einsum('t,r->tr',MIURamp,np.ones((Nr)))
-                        
+                    
+                    i_FutureInflow_ind = RECC_System.ParameterDict['1_F_RECC_FinalProducts_Future_industry'].Values[:,:,:,:,:]                     ### dimensions: rSRpt of TotalFutureInflow_UsePhase_ind
+
+                    
+                       
                     # Include_REStrategy_LifeTimeExtension: Product lifetime extension.
                     # First, replicate lifetimes for all age-cohorts
-                    Par_RECC_ProductLifetime_ind = np.einsum('cr,p->pcr',np.ones((Nc,Nl)),RECC_System.ParameterDict['3_LT_RECC_ProductLifetime_industry'].Values[:])
+                    Par_RECC_ProductLifetime_ind = np.einsum('cr,p->prc',np.ones((Nc,Nl)),RECC_System.ParameterDict['3_LT_RECC_ProductLifetime_industry'].Values[:])
 #                    # Second, change lifetime of future age-cohorts according to lifetime extension parameter
 #                   # This is equation 10 of the paper:
 #                    if ScriptConfig['Include_REStrategy_LifeTimeExtension'] == 'True':
@@ -658,9 +661,10 @@ for mS in range(0,NS):
 #                    
                     # 3) Dynamic stock model
                     # Build pdf array from lifetime distribution: Probability of survival.
-                    for p in tqdm(range(0, Np), unit=' vehicles types'):
-                        for r in range(0, Nr):
-                            LifeTimes = Par_RECC_ProductLifetime_p[p, r, :]
+                    for p in tqdm(range(0, NI), unit='EGT types'):
+                        for r in range(0, Nl):
+                            LifeTimes = Par_RECC_ProductLifetime_ind[p, r, :]
+                        
                             lt = {'Type'  : 'Normal',
                                   'Mean'  : LifeTimes,
                                   'StdDev': 0.3 * LifeTimes}
@@ -669,38 +673,37 @@ for mS in range(0,NS):
                             # Those parts of the stock remain in use instead.
             
                     # Compute evolution of 2015 in-use stocks: initial stock evolution separately from future stock demand and stock-driven model
-                    for r in range(0,Nr):   
-                        FutureStock                 = np.zeros((Nc))
-                        FutureStock[SwitchTime::]   = TotalStockCurves_UsePhase_p[1::, r].copy()# Future total stock
-                        InitialStock                = TotalStock_UsePhase_Hist_cpr[:,:,r].copy()
-                        InitialStocksum             = InitialStock.sum()
-                        StockMatch_2015[Sector_pav_loc,r] = TotalStockCurves_UsePhase_p[0, r]/InitialStocksum
+                    for r in range(0,Nl):   
+                        FutureStock                 = np.zeros((NI))
+                        FutureInflow	               = i_FutureInflow_ind[r,:,:,:,:].copy()# Future total stock
+                        S_c_2015_industry             = S_c_2015_ind[r,:,:,:,86:115].copy()
+                      #  InitialStocksum             = InitialStock.sum()
                         SFArrayCombined             = SF_Array[:,:,:,r]
-                        TypeSplit                   = np.zeros((Nc,Np))
-                        TypeSplit[SwitchTime::,:]   = RECC_System.ParameterDict['3_SHA_TypeSplit_Vehicles'].Values[Sector_pav_loc,:,1::,r,mS].transpose() # indices: pc
+                      #  TypeSplit                   = np.zeros((Nc,NI))
+                       # TypeSplit[SwitchTime::,:]   = RECC_System.ParameterDict['3_SHA_TypeSplit_Vehicles'].Values[Sector_pav_loc,:,1::,r,mS].transpose() # indices: pc
                         
-                        RECC_dsm                    = dsm.DynamicStockModel(t=np.arange(0,Nc,1), s=FutureStock.copy(), lt = lt)  # The lt parameter is not used, the sf array is handed over directly in the next step.   
-                        Var_S, Var_O, Var_I, IFlags = RECC_dsm.compute_stock_driven_model_initialstock_typesplit_negativeinflowcorrect(SwitchTime,InitialStock,SFArrayCombined,TypeSplit,NegativeInflowCorrect = True)
-                        
-                        # Below, the results are added with += because the different commodity groups (buildings, vehicles) are calculated separately
-                        # to introduce the type split for each, but using the product resolution of the full model with all sectors.
-                        Stock_Detail_UsePhase_p[0,:,:,r]     += InitialStock.copy() # cgr, needed for correct calculation of mass balance later.
-                        Stock_Detail_UsePhase_p[1::,:,:,r]   += Var_S[SwitchTime::,:,:].copy() # tcpr
-                        Outflow_Detail_UsePhase_p[1::,:,:,r] += Var_O[SwitchTime::,:,:].copy() # tcpr
-                        Inflow_Detail_UsePhase_p[1::,:,r]    += Var_I[SwitchTime::,:].copy() # tpr
-                        # Check for negative inflows:
-                        if IFlags.sum() != 0:
-                            NegInflowFlags[Sector_pav_loc,mS,mR] = 1 # flag this scenario
-            
-                    # Here so far: Units: Vehicles: million. for stocks, X/yr for flows.
-                    StockCurves_Totl[:,Sector_pav_loc,mS,mR] = TotalStockCurves_UsePhase_p.sum(axis =1)
-                    StockCurves_Prod[:,Sector_pav_rge,mS,mR] = np.einsum('tcpr->tp',Stock_Detail_UsePhase_p)
-                    pCStocksCurves[:,Sector_pav_loc,:,mS,mR] = ParameterDict['2_S_RECC_FinalProducts_Future_passvehicles'].Values[mS,:,Sector_pav_loc,:]
-                    Population[:,:,mS,mR]                    = ParameterDict['2_P_RECC_Population_SSP_32R'].Values[0,:,:,mS]
-                    Inflow_Prod[:,Sector_pav_rge,mS,mR]      = np.einsum('tpr->tp',Inflow_Detail_UsePhase_p)
-                    Outflow_Prod[:,Sector_pav_rge,mS,mR]     = np.einsum('tcpr->tp',Outflow_Detail_UsePhase_p)
-        
-             
+                        RECC_dsm                    = dsm.DynamicStockModel(t=np.arange(0,NI,1), s_c= S_c_2015_industry, i = FutureInflow  , lt = lt)  # The lt parameter is not used, the sf array is handed over directly in the next step.   
+                     #   Var_S, Var_O, Var_I, IFlags = RECC_dsm.compute_stock_driven_model_initialstock_typesplit_negativeinflowcorrect(SwitchTime,InitialStock,SFArrayCombined,TypeSplit,NegativeInflowCorrect = True)
+#                        
+#                        # Below, the results are added with += because the different commodity groups (buildings, vehicles) are calculated separately
+#                        # to introduce the type split for each, but using the product resolution of the full model with all sectors.
+#                        Stock_Detail_UsePhase_p[0,:,:,r]     += InitialStock.copy() # cgr, needed for correct calculation of mass balance later.
+#                        Stock_Detail_UsePhase_p[1::,:,:,r]   += Var_S[SwitchTime::,:,:].copy() # tcpr
+#                        Outflow_Detail_UsePhase_p[1::,:,:,r] += Var_O[SwitchTime::,:,:].copy() # tcpr
+#                        Inflow_Detail_UsePhase_p[1::,:,r]    += Var_I[SwitchTime::,:].copy() # tpr
+#                        # Check for negative inflows:
+#                        if IFlags.sum() != 0:
+#                            NegInflowFlags[Sector_pav_loc,mS,mR] = 1 # flag this scenario
+#            
+#                    # Here so far: Units: Vehicles: million. for stocks, X/yr for flows.
+#                    StockCurves_Totl[:,Sector_pav_loc,mS,mR] = TotalStockCurves_UsePhase_p.sum(axis =1)
+#                    StockCurves_Prod[:,Sector_pav_rge,mS,mR] = np.einsum('tcpr->tp',Stock_Detail_UsePhase_p)
+#                    pCStocksCurves[:,Sector_pav_loc,:,mS,mR] = ParameterDict['2_S_RECC_FinalProducts_Future_passvehicles'].Values[mS,:,Sector_pav_loc,:]
+#                    Population[:,:,mS,mR]                    = ParameterDict['2_P_RECC_Population_SSP_32R'].Values[0,:,:,mS]
+#                    Inflow_Prod[:,Sector_pav_rge,mS,mR]      = np.einsum('tpr->tp',Inflow_Detail_UsePhase_p)
+#                    Outflow_Prod[:,Sector_pav_rge,mS,mR]     = np.einsum('tcpr->tp',Outflow_Detail_UsePhase_p)
+#        
+#             
         # Sector: Appliances, global coverage, will be calculated separately and waste will be added to wast mgt. inflow for 1st region.
         if 'app' in SectorList:            
             None
