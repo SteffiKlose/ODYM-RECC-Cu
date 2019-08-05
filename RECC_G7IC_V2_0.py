@@ -183,11 +183,14 @@ Nt = len(IndexTable.Classification[IndexTable.index.get_loc('Time')].Items)
 Ne = len(IndexTable.Classification[IndexTable.index.get_loc('Element')].Items)
 Nc = len(IndexTable.Classification[IndexTable.index.get_loc('Cohort')].Items)
 Nr = len(IndexTable.Classification[IndexTable.index.get_loc('Region32')].Items)
+Nl = len(IndexTable.Classification[IndexTable.index.get_loc('Region11')].Items)
 No = len(IndexTable.Classification[IndexTable.index.get_loc('Region1')].Items)
 NG = len(IndexTable.Classification[IndexTable.set_index('IndexLetter').index.get_loc('G')].Items)
 Ng = len(IndexTable.Classification[IndexTable.set_index('IndexLetter').index.get_loc('g')].Items)
 Np = len(IndexTable.Classification[IndexTable.set_index('IndexLetter').index.get_loc('p')].Items)
 NB = len(IndexTable.Classification[IndexTable.set_index('IndexLetter').index.get_loc('B')].Items)
+NI = len(IndexTable.Classification[IndexTable.set_index('IndexLetter').index.get_loc('I')].Items)
+Na = len(IndexTable.Classification[IndexTable.set_index('IndexLetter').index.get_loc('a')].Items)
 NS = len(IndexTable.Classification[IndexTable.index.get_loc('Scenario')].Items)
 NR = len(IndexTable.Classification[IndexTable.index.get_loc('Scenario_RCP')].Items)
 Nw = len(IndexTable.Classification[IndexTable.index.get_loc('Waste_Scrap')].Items)
@@ -195,6 +198,8 @@ Nm = len(IndexTable.Classification[IndexTable.index.get_loc('Engineering materia
 NX = len(IndexTable.Classification[IndexTable.index.get_loc('Extensions')].Items)
 Nn = len(IndexTable.Classification[IndexTable.index.get_loc('Energy')].Items)
 NV = len(IndexTable.Classification[IndexTable.set_index('IndexLetter').index.get_loc('V')].Items)
+
+
 #IndexTable.ix['t']['Classification'].Items # get classification items
 
 SwitchTime = Nc-Nt+1
@@ -257,99 +262,99 @@ Sector_app_loc = 1 # index of applications in sector list.
 Sector_app_rge = np.arange(90,102,1)
 
 
-Service_Driving= 3
-Material_Wood  = 9
-Service_Resbld = np.array([0,1,2])
+#Service_Driving= 3
+#Material_Wood  = 9
+#Service_Resbld = np.array([0,1,2])
 
-# 1) Material composition of vehicles, will only use historic age-cohorts.
-# Values are given every 5 years, we need all values in between.
-index = PL_Names.index('3_MC_RECC_Vehicles')
-MC_Veh_New = np.zeros(ParameterDict[PL_Names[index]].Values.shape)
-Idx_Time = [1980,1985,1990,1995,2000,2005,2010,2015,2020,2025,2030,2035,2040,2045,2050,2055,2060]
-Idx_Time_Rel = [i -1900 for i in Idx_Time]
-tnew = np.linspace(80, 160, num=81, endpoint=True)
-for n in range(0,Nm):
-    for o in range(0,Np):
-        for p in range(0,Nr):
-            f2 = interp1d(Idx_Time_Rel, ParameterDict[PL_Names[index]].Values[Idx_Time_Rel,n,o,p], kind='linear')
-            MC_Veh_New[80::,n,o,p] = f2(tnew)
-ParameterDict[PL_Names[index]].Values = MC_Veh_New.copy()
+## 1) Material composition of vehicles, will only use historic age-cohorts.
+## Values are given every 5 years, we need all values in between.
+#index = PL_Names.index('3_MC_RECC_Vehicles')
+#MC_Veh_New = np.zeros(ParameterDict[PL_Names[index]].Values.shape)
+#Idx_Time = [1980,1985,1990,1995,2000,2005,2010,2015,2020,2025,2030,2035,2040,2045,2050,2055,2060]
+#Idx_Time_Rel = [i -1900 for i in Idx_Time]
+#tnew = np.linspace(80, 160, num=81, endpoint=True)
+#for n in range(0,Nm):
+#    for o in range(0,Np):
+#        for p in range(0,Nr):
+#            f2 = interp1d(Idx_Time_Rel, ParameterDict[PL_Names[index]].Values[Idx_Time_Rel,n,o,p], kind='linear')
+#            MC_Veh_New[80::,n,o,p] = f2(tnew)
+#ParameterDict[PL_Names[index]].Values = MC_Veh_New.copy()
+#
+## 2) Material composition of buildings, will only use historic age-cohorts.
+## Values are given every 5 years, we need all values in between.
+#index = PL_Names.index('3_MC_RECC_Buildings')
+#MC_Bld_New = np.zeros(ParameterDict[PL_Names[index]].Values.shape)
+#Idx_Time = [1900,1910,1920,1930,1940,1950,1960,1970,1980,1985,1990,1995,2000,2005,2010,2015,2020,2025,2030,2035,2040,2045,2050,2055,2060]
+#Idx_Time_Rel = [i -1900 for i in Idx_Time]
+#tnew = np.linspace(0, 160, num=161, endpoint=True)
+#for n in range(0,Nm):
+#    for o in range(0,NB):
+#        for p in range(0,Nr):
+#            f2 = interp1d(Idx_Time_Rel, ParameterDict[PL_Names[index]].Values[Idx_Time_Rel,n,o,p], kind='linear')
+#            MC_Bld_New[:,n,o,p] = f2(tnew).copy()
+#ParameterDict[PL_Names[index]].Values = MC_Bld_New.copy()
 
-# 2) Material composition of buildings, will only use historic age-cohorts.
-# Values are given every 5 years, we need all values in between.
-index = PL_Names.index('3_MC_RECC_Buildings')
-MC_Bld_New = np.zeros(ParameterDict[PL_Names[index]].Values.shape)
-Idx_Time = [1900,1910,1920,1930,1940,1950,1960,1970,1980,1985,1990,1995,2000,2005,2010,2015,2020,2025,2030,2035,2040,2045,2050,2055,2060]
-Idx_Time_Rel = [i -1900 for i in Idx_Time]
-tnew = np.linspace(0, 160, num=161, endpoint=True)
-for n in range(0,Nm):
-    for o in range(0,NB):
-        for p in range(0,Nr):
-            f2 = interp1d(Idx_Time_Rel, ParameterDict[PL_Names[index]].Values[Idx_Time_Rel,n,o,p], kind='linear')
-            MC_Bld_New[:,n,o,p] = f2(tnew).copy()
-ParameterDict[PL_Names[index]].Values = MC_Bld_New.copy()
-
-# 3) Determine future energy intensity and material composition of vehicles by mixing archetypes:
-# Replicate values for other countries
-# replicate vehicle building parameter from World to all regions
-ParameterDict['3_SHA_LightWeighting_Buildings'].Values     = np.einsum('BtS,r->BrtS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values[:,0,:,:],np.ones(Nr))
-
-# Check if RE strategies are active and set implementation curves to 2016 value if not.
-if ScriptConfig['Include_REStrategy_MaterialSubstitution'] == 'False': # no lightweighting trough material substitution.
-    ParameterDict['3_SHA_LightWeighting_Vehicles'].Values  = np.einsum('prS,t->prtS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values[:,:,0,:],np.ones((Nt)))
-    ParameterDict['3_SHA_LightWeighting_Buildings'].Values = np.einsum('BrS,t->BrtS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values[:,:,0,:],np.ones((Nt)))
-    
-if ScriptConfig['Include_REStrategy_UsingLessMaterialByDesign'] == 'False': # no lightweighting trough UsingLessMaterialByDesign.
-    ParameterDict['3_SHA_DownSizing_Vehicles'].Values  = np.einsum('urS,t->urtS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values[:,:,0,:],np.ones((Nt)))
-    ParameterDict['3_SHA_DownSizing_Buildings'].Values = np.einsum('urS,t->urtS',ParameterDict['3_SHA_DownSizing_Buildings'].Values[:,:,0,:],np.ones((Nt)))
-
-ParameterDict['3_MC_RECC_Vehicles_RECC'] = msc.Parameter(Name='3_MC_RECC_Vehicles_RECC', ID='3_MC_RECC_Vehicles_RECC',
-                                           UUID=None, P_Res=None, MetaData=None,
-                                           Indices='cmprS', Values=np.zeros((Nc,Nm,Np,Nr,NS)), Uncert=None,
-                                           Unit='kg/unit')
-ParameterDict['3_MC_RECC_Vehicles_RECC'].Values[0:115,:,:,:,:] = np.einsum('cmpr,S->cmprS',ParameterDict['3_MC_RECC_Vehicles'].Values[0:115,:,:,:],np.ones(NS))
-ParameterDict['3_MC_RECC_Vehicles_RECC'].Values[115::,:,:,:,:] = \
-np.einsum('prcS,pmrcS->cmprS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values,       np.einsum('urcS,pm->pmrcS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_MC_VehicleArchetypes'].Values[[12,14,16,18,20,22],:]))/10000 +\
-np.einsum('prcS,pmrcS->cmprS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values,       np.einsum('urcS,pm->pmrcS',100 - ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_MC_VehicleArchetypes'].Values[[13,15,17,19,21,23],:]))/10000 +\
-np.einsum('prcS,pmrcS->cmprS',100 - ParameterDict['3_SHA_LightWeighting_Vehicles'].Values, np.einsum('urcS,pm->pmrcS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_MC_VehicleArchetypes'].Values[[0,2,4,6,8,10],:]))/10000 +\
-np.einsum('prcS,pmrcS->cmprS',100 - ParameterDict['3_SHA_LightWeighting_Vehicles'].Values, np.einsum('urcS,pm->pmrcS',100 - ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_MC_VehicleArchetypes'].Values[[1,3,5,7,9,11],:]))/10000
-
-ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[115::,:,3,:,:,:] = \
-np.einsum('prcS,pnrcS->cpnrS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values,       np.einsum('urcS,pn->pnrcS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_EI_VehicleArchetypes'].Values[[12,14,16,18,20,22],:]))/10000 +\
-np.einsum('prcS,pnrcS->cpnrS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values,       np.einsum('urcS,pn->pnrcS',100 - ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_EI_VehicleArchetypes'].Values[[13,15,17,19,21,23],:]))/10000 +\
-np.einsum('prcS,pnrcS->cpnrS',100 - ParameterDict['3_SHA_LightWeighting_Vehicles'].Values, np.einsum('urcS,pn->pnrcS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_EI_VehicleArchetypes'].Values[[0,2,4,6,8,10],:]))/10000 +\
-np.einsum('prcS,pnrcS->cpnrS',100 - ParameterDict['3_SHA_LightWeighting_Vehicles'].Values, np.einsum('urcS,pn->pnrcS',100 - ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_EI_VehicleArchetypes'].Values[[1,3,5,7,9,11],:]))/10000
-
-# 4) Determine future energy intensity and material composition of buildings by mixing archetypes:
-ParameterDict['3_MC_RECC_Buildings_RECC'] = msc.Parameter(Name='3_MC_RECC_Buildings_RECC', ID='3_MC_RECC_Buildings_RECC',
-                                            UUID=None, P_Res=None, MetaData=None,
-                                            Indices='cmgBrS', Values=np.zeros((Nc,Nm,NB,Nr,NS)), Uncert=None,
-                                            Unit='kg/unit')
-ParameterDict['3_MC_RECC_Buildings_RECC'].Values[0:115,:,:,:,:] = np.einsum('cmBr,S->cmBrS',ParameterDict['3_MC_RECC_Buildings'].Values[0:115,:,:,:],np.ones(NS))
-ParameterDict['3_MC_RECC_Buildings_RECC'].Values[115::,:,:,:,:] = \
-np.einsum('BrcS,BmrcS->cmBrS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values,       np.einsum('urcS,Brm->BmrcS',ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_MC_BuildingArchetypes'].Values[[51,52,53,54,55,56,57,58,59],:,:]))/10000 +\
-np.einsum('BrcS,BmrcS->cmBrS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values,       np.einsum('urcS,Brm->BmrcS',100 - ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_MC_BuildingArchetypes'].Values[[33,34,35,36,37,38,39,40,41],:,:]))/10000 +\
-np.einsum('BrcS,BmrcS->cmBrS',100 - ParameterDict['3_SHA_LightWeighting_Buildings'].Values, np.einsum('urcS,Brm->BmrcS',ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_MC_BuildingArchetypes'].Values[[42,43,44,45,46,47,48,49,50],:,:]))/10000 +\
-np.einsum('BrcS,BmrcS->cmBrS',100 - ParameterDict['3_SHA_LightWeighting_Buildings'].Values, np.einsum('urcS,Brm->BmrcS',100 - ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_MC_BuildingArchetypes'].Values[[24,25,26,27,28,29,30,31,32],:,:]))/10000
-
-# Replicate values for Al, Cu, Plastics:
-ParameterDict['3_MC_RECC_Buildings_RECC'].Values[115::,[4,5,6,7,10],:,:,:] = np.einsum('mBr,cS->cmBrS',ParameterDict['3_MC_RECC_Buildings'].Values[110,[4,5,6,7,10],:,:].copy(),np.ones((Nt,NS)))
-# Split contrete into cement and aggregates:
-# Cement for buildings remains, as this item refers to cement in mortar, screed, and plaster. Cement in concrete is calculated as 0.13 * concrete and added here. 
-# Concrete aggregates (0.87*concrete) are considered as well.
-ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,8,:,:,:]  = ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,8,:,:,:] + 0.13 * ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,11,:,:,:].copy()
-ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,12,:,:,:] = 0.87 * ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,11,:,:,:].copy()
-ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,11,:,:,:] = 0
-
-ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[115::,:,:,:,:,:] = \
-np.einsum('BrcS,BnrVcS->cBVnrS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values,       np.einsum('urcS,BrVn->BnrVcS',ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_EI_BuildingArchetypes'].Values[[51,52,53,54,55,56,57,58,59],:,:,:]))/10000 +\
-np.einsum('BrcS,BnrVcS->cBVnrS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values,       np.einsum('urcS,BrVn->BnrVcS',100 - ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_EI_BuildingArchetypes'].Values[[33,34,35,36,37,38,39,40,41],:,:,:]))/10000 +\
-np.einsum('BrcS,BnrVcS->cBVnrS',100 - ParameterDict['3_SHA_LightWeighting_Buildings'].Values, np.einsum('urcS,BrVn->BnrVcS',ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_EI_BuildingArchetypes'].Values[[42,43,44,45,46,47,48,49,50],:,:,:]))/10000 +\
-np.einsum('BrcS,BnrVcS->cBVnrS',100 - ParameterDict['3_SHA_LightWeighting_Buildings'].Values, np.einsum('urcS,BrVn->BnrVcS',100 - ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_EI_BuildingArchetypes'].Values[[24,25,26,27,28,29,30,31,32],:,:,:]))/10000
-
-# 5) GHG intensity of energy supply: Change unit from g/MJ to kg/MJ
-index = PL_Names.index('4_PE_GHGIntensityEnergySupply')
-ParameterDict[PL_Names[index]].Values = ParameterDict[PL_Names[index]].Values/1000 # convert g/MJ to kg/MJ
+## 3) Determine future energy intensity and material composition of vehicles by mixing archetypes:
+## Replicate values for other countries
+## replicate vehicle building parameter from World to all regions
+#ParameterDict['3_SHA_LightWeighting_Buildings'].Values     = np.einsum('BtS,r->BrtS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values[:,0,:,:],np.ones(Nr))
+#
+## Check if RE strategies are active and set implementation curves to 2016 value if not.
+#if ScriptConfig['Include_REStrategy_MaterialSubstitution'] == 'False': # no lightweighting trough material substitution.
+#    ParameterDict['3_SHA_LightWeighting_Vehicles'].Values  = np.einsum('prS,t->prtS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values[:,:,0,:],np.ones((Nt)))
+#    ParameterDict['3_SHA_LightWeighting_Buildings'].Values = np.einsum('BrS,t->BrtS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values[:,:,0,:],np.ones((Nt)))
+#    
+#if ScriptConfig['Include_REStrategy_UsingLessMaterialByDesign'] == 'False': # no lightweighting trough UsingLessMaterialByDesign.
+#    ParameterDict['3_SHA_DownSizing_Vehicles'].Values  = np.einsum('urS,t->urtS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values[:,:,0,:],np.ones((Nt)))
+#    ParameterDict['3_SHA_DownSizing_Buildings'].Values = np.einsum('urS,t->urtS',ParameterDict['3_SHA_DownSizing_Buildings'].Values[:,:,0,:],np.ones((Nt)))
+#
+#ParameterDict['3_MC_RECC_Vehicles_RECC'] = msc.Parameter(Name='3_MC_RECC_Vehicles_RECC', ID='3_MC_RECC_Vehicles_RECC',
+#                                           UUID=None, P_Res=None, MetaData=None,
+#                                           Indices='cmprS', Values=np.zeros((Nc,Nm,Np,Nr,NS)), Uncert=None,
+#                                           Unit='kg/unit')
+#ParameterDict['3_MC_RECC_Vehicles_RECC'].Values[0:115,:,:,:,:] = np.einsum('cmpr,S->cmprS',ParameterDict['3_MC_RECC_Vehicles'].Values[0:115,:,:,:],np.ones(NS))
+#ParameterDict['3_MC_RECC_Vehicles_RECC'].Values[115::,:,:,:,:] = \
+#np.einsum('prcS,pmrcS->cmprS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values,       np.einsum('urcS,pm->pmrcS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_MC_VehicleArchetypes'].Values[[12,14,16,18,20,22],:]))/10000 +\
+#np.einsum('prcS,pmrcS->cmprS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values,       np.einsum('urcS,pm->pmrcS',100 - ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_MC_VehicleArchetypes'].Values[[13,15,17,19,21,23],:]))/10000 +\
+#np.einsum('prcS,pmrcS->cmprS',100 - ParameterDict['3_SHA_LightWeighting_Vehicles'].Values, np.einsum('urcS,pm->pmrcS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_MC_VehicleArchetypes'].Values[[0,2,4,6,8,10],:]))/10000 +\
+#np.einsum('prcS,pmrcS->cmprS',100 - ParameterDict['3_SHA_LightWeighting_Vehicles'].Values, np.einsum('urcS,pm->pmrcS',100 - ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_MC_VehicleArchetypes'].Values[[1,3,5,7,9,11],:]))/10000
+#
+#ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[115::,:,3,:,:,:] = \
+#np.einsum('prcS,pnrcS->cpnrS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values,       np.einsum('urcS,pn->pnrcS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_EI_VehicleArchetypes'].Values[[12,14,16,18,20,22],:]))/10000 +\
+#np.einsum('prcS,pnrcS->cpnrS',ParameterDict['3_SHA_LightWeighting_Vehicles'].Values,       np.einsum('urcS,pn->pnrcS',100 - ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_EI_VehicleArchetypes'].Values[[13,15,17,19,21,23],:]))/10000 +\
+#np.einsum('prcS,pnrcS->cpnrS',100 - ParameterDict['3_SHA_LightWeighting_Vehicles'].Values, np.einsum('urcS,pn->pnrcS',ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_EI_VehicleArchetypes'].Values[[0,2,4,6,8,10],:]))/10000 +\
+#np.einsum('prcS,pnrcS->cpnrS',100 - ParameterDict['3_SHA_LightWeighting_Vehicles'].Values, np.einsum('urcS,pn->pnrcS',100 - ParameterDict['3_SHA_DownSizing_Vehicles'].Values,ParameterDict['3_EI_VehicleArchetypes'].Values[[1,3,5,7,9,11],:]))/10000
+#
+## 4) Determine future energy intensity and material composition of buildings by mixing archetypes:
+#ParameterDict['3_MC_RECC_Buildings_RECC'] = msc.Parameter(Name='3_MC_RECC_Buildings_RECC', ID='3_MC_RECC_Buildings_RECC',
+#                                            UUID=None, P_Res=None, MetaData=None,
+#                                            Indices='cmgBrS', Values=np.zeros((Nc,Nm,NB,Nr,NS)), Uncert=None,
+#                                            Unit='kg/unit')
+#ParameterDict['3_MC_RECC_Buildings_RECC'].Values[0:115,:,:,:,:] = np.einsum('cmBr,S->cmBrS',ParameterDict['3_MC_RECC_Buildings'].Values[0:115,:,:,:],np.ones(NS))
+#ParameterDict['3_MC_RECC_Buildings_RECC'].Values[115::,:,:,:,:] = \
+#np.einsum('BrcS,BmrcS->cmBrS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values,       np.einsum('urcS,Brm->BmrcS',ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_MC_BuildingArchetypes'].Values[[51,52,53,54,55,56,57,58,59],:,:]))/10000 +\
+#np.einsum('BrcS,BmrcS->cmBrS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values,       np.einsum('urcS,Brm->BmrcS',100 - ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_MC_BuildingArchetypes'].Values[[33,34,35,36,37,38,39,40,41],:,:]))/10000 +\
+#np.einsum('BrcS,BmrcS->cmBrS',100 - ParameterDict['3_SHA_LightWeighting_Buildings'].Values, np.einsum('urcS,Brm->BmrcS',ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_MC_BuildingArchetypes'].Values[[42,43,44,45,46,47,48,49,50],:,:]))/10000 +\
+#np.einsum('BrcS,BmrcS->cmBrS',100 - ParameterDict['3_SHA_LightWeighting_Buildings'].Values, np.einsum('urcS,Brm->BmrcS',100 - ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_MC_BuildingArchetypes'].Values[[24,25,26,27,28,29,30,31,32],:,:]))/10000
+#
+## Replicate values for Al, Cu, Plastics:
+#ParameterDict['3_MC_RECC_Buildings_RECC'].Values[115::,[4,5,6,7,10],:,:,:] = np.einsum('mBr,cS->cmBrS',ParameterDict['3_MC_RECC_Buildings'].Values[110,[4,5,6,7,10],:,:].copy(),np.ones((Nt,NS)))
+## Split contrete into cement and aggregates:
+## Cement for buildings remains, as this item refers to cement in mortar, screed, and plaster. Cement in concrete is calculated as 0.13 * concrete and added here. 
+## Concrete aggregates (0.87*concrete) are considered as well.
+#ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,8,:,:,:]  = ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,8,:,:,:] + 0.13 * ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,11,:,:,:].copy()
+#ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,12,:,:,:] = 0.87 * ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,11,:,:,:].copy()
+#ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,11,:,:,:] = 0
+#
+#ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[115::,:,:,:,:,:] = \
+#np.einsum('BrcS,BnrVcS->cBVnrS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values,       np.einsum('urcS,BrVn->BnrVcS',ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_EI_BuildingArchetypes'].Values[[51,52,53,54,55,56,57,58,59],:,:,:]))/10000 +\
+#np.einsum('BrcS,BnrVcS->cBVnrS',ParameterDict['3_SHA_LightWeighting_Buildings'].Values,       np.einsum('urcS,BrVn->BnrVcS',100 - ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_EI_BuildingArchetypes'].Values[[33,34,35,36,37,38,39,40,41],:,:,:]))/10000 +\
+#np.einsum('BrcS,BnrVcS->cBVnrS',100 - ParameterDict['3_SHA_LightWeighting_Buildings'].Values, np.einsum('urcS,BrVn->BnrVcS',ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_EI_BuildingArchetypes'].Values[[42,43,44,45,46,47,48,49,50],:,:,:]))/10000 +\
+#np.einsum('BrcS,BnrVcS->cBVnrS',100 - ParameterDict['3_SHA_LightWeighting_Buildings'].Values, np.einsum('urcS,BrVn->BnrVcS',100 - ParameterDict['3_SHA_DownSizing_Buildings'].Values,ParameterDict['3_EI_BuildingArchetypes'].Values[[24,25,26,27,28,29,30,31,32],:,:,:]))/10000
+#
+## 5) GHG intensity of energy supply: Change unit from g/MJ to kg/MJ
+#index = PL_Names.index('4_PE_GHGIntensityEnergySupply')
+#ParameterDict[PL_Names[index]].Values = ParameterDict[PL_Names[index]].Values/1000 # convert g/MJ to kg/MJ
 
 # 6) Fabrication yield:
 # Extrapolate 2050-2060 as 2015 values
@@ -359,50 +364,55 @@ ParameterDict[PL_Names[index]].Values[:,:,:,:,1::,:] = np.einsum('t,mwgFr->mwgFt
 # 7) EoL RR, apply world average to all regions
 ParameterDict['4_PY_EoL_RecoveryRate'].Values = np.einsum('gmwW,r->grmwW',ParameterDict['4_PY_EoL_RecoveryRate'].Values[:,0,:,:,:],np.ones((Nr)))
 
-# 8) Energy carrier split of vehicles, replicate fixed values for all regions and age-cohorts etc.
-ParameterDict['3_SHA_EnergyCarrierSplit_Vehicles'].Values = np.einsum('pn,crVS->cprVnS',ParameterDict['3_SHA_EnergyCarrierSplit_Vehicles'].Values[115,:,0,3,:,SSP1index].copy(),np.ones((Nc,Nr,NV,NS)))
+## 8) Energy carrier split of vehicles, replicate fixed values for all regions and age-cohorts etc.
+#ParameterDict['3_SHA_EnergyCarrierSplit_Vehicles'].Values = np.einsum('pn,crVS->cprVnS',ParameterDict['3_SHA_EnergyCarrierSplit_Vehicles'].Values[115,:,0,3,:,SSP1index].copy(),np.ones((Nc,Nr,NV,NS)))
 
-# 9) RE strategy potentials for individual countries are replicated from global average:
-ParameterDict['6_PR_ReUse_Bld'].Values                      = np.einsum('mB,r->mBr',ParameterDict['6_PR_ReUse_Bld'].Values[:,:,0],np.ones(Nr))
-ParameterDict['6_PR_LifeTimeExtension_passvehicles'].Values = np.einsum('pS,r->prS',ParameterDict['6_PR_LifeTimeExtension_passvehicles'].Values[:,0,:],np.ones(Nr))
-ParameterDict['6_PR_LifeTimeExtension_resbuildings'].Values = np.einsum('pS,r->prS',ParameterDict['6_PR_LifeTimeExtension_resbuildings'].Values[:,0,:],np.ones(Nr))
-ParameterDict['6_PR_EoL_RR_Improvement'].Values             = np.einsum('gmwW,r->grmwW',ParameterDict['6_PR_EoL_RR_Improvement'].Values[:,0,:,:,:],np.ones(Nr))
-# 9a) Define a multi-regional RE strategy scaleup parameter
-ParameterDict['3_SHA_RECC_REStrategyScaleUp_r'] = msc.Parameter(Name='3_SHA_RECC_REStrategyScaleUp_r', ID='3_SHA_RECC_REStrategyScaleUp_r',
-                                                  UUID=None, P_Res=None, MetaData=None,
-                                                  Indices='trSR', Values=np.zeros((Nt,Nr,NS,NR)), Uncert=None,
-                                                  Unit='kg/unit')
-ParameterDict['3_SHA_RECC_REStrategyScaleUp_r'].Values        = np.einsum('RtS,r->trSR',ParameterDict['3_SHA_RECC_REStrategyScaleUp'].Values[:,0,:,:],np.ones(Nr)).copy()
+## 9) RE strategy potentials for individual countries are replicated from global average:
+#ParameterDict['6_PR_ReUse_Bld'].Values                      = np.einsum('mB,r->mBr',ParameterDict['6_PR_ReUse_Bld'].Values[:,:,0],np.ones(Nr))
+#ParameterDict['6_PR_LifeTimeExtension_passvehicles'].Values = np.einsum('pS,r->prS',ParameterDict['6_PR_LifeTimeExtension_passvehicles'].Values[:,0,:],np.ones(Nr))
+#ParameterDict['6_PR_LifeTimeExtension_resbuildings'].Values = np.einsum('pS,r->prS',ParameterDict['6_PR_LifeTimeExtension_resbuildings'].Values[:,0,:],np.ones(Nr))
+#ParameterDict['6_PR_EoL_RR_Improvement'].Values             = np.einsum('gmwW,r->grmwW',ParameterDict['6_PR_EoL_RR_Improvement'].Values[:,0,:,:,:],np.ones(Nr))
+## 9a) Define a multi-regional RE strategy scaleup parameter
+#ParameterDict['3_SHA_RECC_REStrategyScaleUp_r'] = msc.Parameter(Name='3_SHA_RECC_REStrategyScaleUp_r', ID='3_SHA_RECC_REStrategyScaleUp_r',
+#                                                  UUID=None, P_Res=None, MetaData=None,
+#                                                  Indices='trSR', Values=np.zeros((Nt,Nr,NS,NR)), Uncert=None,
+#                                                  Unit='kg/unit')
+#ParameterDict['3_SHA_RECC_REStrategyScaleUp_r'].Values        = np.einsum('RtS,r->trSR',ParameterDict['3_SHA_RECC_REStrategyScaleUp'].Values[:,0,:,:],np.ones(Nr)).copy()
 
 # 10) LED scenario data from proxy scenarios:
 # 2_P_RECC_Population_SSP_32R
-ParameterDict['2_P_RECC_Population_SSP_32R'].Values[:,:,:,LEDindex]                 = ParameterDict['2_P_RECC_Population_SSP_32R'].Values[:,:,:,SSP2index].copy()
-# 3_EI_Products_UsePhase, historic
-ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[0:115,:,:,:,:,LEDindex] = ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[0:115,:,:,:,:,SSP2index].copy()
-ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[0:115,:,:,:,:,LEDindex] = ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[0:115,:,:,:,:,SSP2index].copy()
-# 3_IO_Buildings_UsePhase_G7IC
-ParameterDict['3_IO_Buildings_UsePhase'].Values[:,:,:,:,LEDindex]                   = ParameterDict['3_IO_Buildings_UsePhase'].Values[:,:,:,:,SSP2index].copy()
+#ParameterDict['2_P_RECC_Population_SSP_32R'].Values[:,:,:,LEDindex]                 = ParameterDict['2_P_RECC_Population_SSP_32R'].Values[:,:,:,SSP2index].copy()
+## 3_EI_Products_UsePhase, historic
+#ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[0:115,:,:,:,:,LEDindex] = ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[0:115,:,:,:,:,SSP2index].copy()
+#ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[0:115,:,:,:,:,LEDindex] = ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[0:115,:,:,:,:,SSP2index].copy()
+## 3_IO_Buildings_UsePhase_G7IC
+#ParameterDict['3_IO_Buildings_UsePhase'].Values[:,:,:,:,LEDindex]                   = ParameterDict['3_IO_Buildings_UsePhase'].Values[:,:,:,:,SSP2index].copy()
 # 4_PE_GHGIntensityEnergySupply
-ParameterDict['4_PE_GHGIntensityEnergySupply'].Values[:,:,LEDindex,:,:,:]           = ParameterDict['4_PE_GHGIntensityEnergySupply'].Values[:,:,SSP2index,:,:,:].copy()
+#ParameterDict['4_PE_GHGIntensityEnergySupply'].Values[:,:,LEDindex,:,:,:]           = ParameterDict['4_PE_GHGIntensityEnergySupply'].Values[:,:,SSP2index,:,:,:].copy()
 
 #13) MODEL CALIBRATION
-# Calibrate vehicle kilometrage
-ParameterDict['3_IO_Vehicles_UsePhase'].Values[3,:,:,:]                             = ParameterDict['3_IO_Vehicles_UsePhase'].Values[3,:,:,:]                        * np.einsum('r,tS->rtS',ParameterDict['6_PR_Calibration'].Values[0,:],np.ones((Nt,NS)))
-# Calibrate vehicle fuel consumption, cgVnrS    
-ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[0:115,:,3,:,:,:]        = ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[0:115,:,3,:,:,:]   * np.einsum('r,cgnS->cgnrS',ParameterDict['6_PR_Calibration'].Values[1,:],np.ones((115,Np,Nn,NS)))
-# Calibrate building energy consumption
-ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[0:115,:,0:3,:,:,:]      = ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[0:115,:,0:3,:,:,:] * np.einsum('r,cgVnS->cgVnrS',ParameterDict['6_PR_Calibration'].Values[2,:],np.ones((115,NB,3,Nn,NS)))
+## Calibrate vehicle kilometrage
+#ParameterDict['3_IO_Vehicles_UsePhase'].Values[3,:,:,:]                             = ParameterDict['3_IO_Vehicles_UsePhase'].Values[3,:,:,:]                        * np.einsum('r,tS->rtS',ParameterDict['6_PR_Calibration'].Values[0,:],np.ones((Nt,NS)))
+## Calibrate vehicle fuel consumption, cgVnrS    
+#ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[0:115,:,3,:,:,:]        = ParameterDict['3_EI_Products_UsePhase_passvehicles'].Values[0:115,:,3,:,:,:]   * np.einsum('r,cgnS->cgnrS',ParameterDict['6_PR_Calibration'].Values[1,:],np.ones((115,Np,Nn,NS)))
+## Calibrate building energy consumption
+#ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[0:115,:,0:3,:,:,:]      = ParameterDict['3_EI_Products_UsePhase_resbuildings'].Values[0:115,:,0:3,:,:,:] * np.einsum('r,cgVnS->cgVnrS',ParameterDict['6_PR_Calibration'].Values[2,:],np.ones((115,NB,3,Nn,NS)))
 
 #14) No recycling scenario (counterfactual reference)
 if ScriptConfig['IncludeRecycling'] == 'False': # no recycling and remelting
     ParameterDict['4_PY_EoL_RecoveryRate'].Values            = np.zeros(ParameterDict['4_PY_EoL_RecoveryRate'].Values.shape)
     ParameterDict['4_PY_MaterialProductionRemelting'].Values = np.zeros(ParameterDict['4_PY_MaterialProductionRemelting'].Values.shape)
     
-Stocks_2016_passvehicles   = ParameterDict['2_S_RECC_FinalProducts_2015_passvehicles'].Values[0,:,:,:].sum(axis=0)
-pCStocks_2016_passvehicles = np.einsum('gr,r->rg',Stocks_2016_passvehicles,1/ParameterDict['2_P_RECC_Population_SSP_32R'].Values[0,0,:,1]) 
-Stocks_2016_resbuildings   = ParameterDict['2_S_RECC_FinalProducts_2015_resbuildings'].Values[0,:,:,:].sum(axis=0)
-pCStocks_2016_resbuildings = np.einsum('gr,r->rg',Stocks_2016_resbuildings,1/ParameterDict['2_P_RECC_Population_SSP_32R'].Values[0,0,:,1]) 
+#Stocks_2016_passvehicles   = ParameterDict['2_S_RECC_FinalProducts_2015_passvehicles'].Values[0,:,:,:].sum(axis=0)
+#pCStocks_2016_passvehicles = np.einsum('gr,r->rg',Stocks_2016_passvehicles,1/ParameterDict['2_P_RECC_Population_SSP_32R'].Values[0,0,:,1]) 
+#Stocks_2016_resbuildings   = ParameterDict['2_S_RECC_FinalProducts_2015_resbuildings'].Values[0,:,:,:].sum(axis=0)
+#pCStocks_2016_resbuildings = np.einsum('gr,r->rg',Stocks_2016_resbuildings,1/ParameterDict['2_P_RECC_Population_SSP_32R'].Values[0,0,:,1]) 
  
+Stock_2016_EGT = ParameterDict['2_S_RECC_FinalProducts_2015_industry'].Values[0,:,:,:].sum(axis=0)
+#pStock_2016_EGT =
+
+Stock_2016_app = ParameterDict['2_S_RECC_FinalProducts_2015_industry'].Values[0,:,:,:].sum(axis=0)
+#pStock_2016_app
 ##########################################################
 #    Section 4) Initialize dynamic MFA model for RECC    #
 ##########################################################
@@ -472,7 +482,7 @@ for mS in range(0,NS):
         
         # Initialize MFA system
         RECC_System = msc.MFAsystem(Name='RECC_G7IC_SingleScenario',
-                                    Geogr_Scope='14 regions', #IndexTableR.Classification[IndexTableR.set_index('IndexLetter').index.get_loc('r')].Items,
+                                    Geogr_Scope='11 regions', #IndexTableR.Classification[IndexTableR.set_index('IndexLetter').index.get_loc('r')].Items,
                                     Unit='Mt',
                                     ProcessList=[],
                                     FlowDict={},
@@ -487,131 +497,214 @@ for mS in range(0,NS):
         # Check Validity of index tables:
         # returns true if dimensions are OK and time index is present and element list is not empty
         RECC_System.IndexTableCheck()
-        
+ 
+       
         # Add processes to system
         for m in range(0, len(PrL_Number)):
             RECC_System.ProcessList.append(msc.Process(Name = PrL_Name[m], ID   = PrL_Number[m]))
-            
-        # Define system variables: Flows.    
-        RECC_System.FlowDict['F_0_3']   = msc.Flow(Name='ore input', P_Start=0, P_End=3,
-                                                 Indices='t,m,e', Values=None, Uncert=None,
-                                                 Color=None, ID=None, UUID=None)
-        
-        RECC_System.FlowDict['F_3_4']   = msc.Flow(Name='primary material production' , P_Start = 3, P_End = 4, 
-                                                 Indices = 't,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_4_5']   = msc.Flow(Name='primary material consumption' , P_Start = 4, P_End = 5, 
-                                                 Indices = 't,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_5_6']   = msc.Flow(Name='manufacturing output' , P_Start = 5, P_End = 6, 
-                                                 Indices = 't,o,g,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-            
-        RECC_System.FlowDict['F_6_7']   = msc.Flow(Name='final consumption', P_Start=6, P_End=7,
-                                                 Indices='t,r,g,m,e', Values=None, Uncert=None,
-                                                 Color=None, ID=None, UUID=None)
-        
-        RECC_System.FlowDict['F_7_8']   = msc.Flow(Name='EoL products' , P_Start = 7, P_End = 8, 
-                                                 Indices = 't,c,r,g,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_8_0']   = msc.Flow(Name='obsolete stock formation' , P_Start = 8, P_End = 0, 
-                                                 Indices = 't,c,r,g,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_8_9']   = msc.Flow(Name='waste mgt. input' , P_Start = 8, P_End = 9, 
-                                                 Indices = 't,r,g,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_8_17']  = msc.Flow(Name='product re-use in' , P_Start = 8, P_End = 17, 
-                                                 Indices = 't,c,r,g,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_17_6']  = msc.Flow(Name='product re-use out' , P_Start = 17, P_End = 6, 
-                                                 Indices = 't,c,r,g,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_9_10']  = msc.Flow(Name='old scrap' , P_Start = 9, P_End = 10, 
-                                                 Indices = 't,r,w,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_5_10']  = msc.Flow(Name='new scrap' , P_Start = 5, P_End = 10, 
-                                                 Indices = 't,o,w,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_10_9']  = msc.Flow(Name='scrap use' , P_Start = 10, P_End = 9, 
-                                                 Indices = 't,o,w,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_9_12']  = msc.Flow(Name='secondary material production' , P_Start = 9, P_End = 12, 
-                                                 Indices = 't,o,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
 
-        RECC_System.FlowDict['F_10_12'] = msc.Flow(Name='fabscrapdiversion' , P_Start = 10, P_End = 12, 
-                                                 Indices = 't,o,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)        
-        
-        RECC_System.FlowDict['F_12_5']  = msc.Flow(Name='secondary material consumption' , P_Start = 12, P_End = 5, 
-                                                 Indices = 't,o,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_12_0']  = msc.Flow(Name='excess secondary material' , P_Start = 12, P_End = 0, 
-                                                 Indices = 't,o,m,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        RECC_System.FlowDict['F_9_0']   = msc.Flow(Name='waste mgt. and remelting losses' , P_Start = 9, P_End = 0, 
-                                                 Indices = 't,e', Values=None, Uncert=None, 
-                                                 Color = None, ID = None, UUID = None)
-        
-        # Define system variables: Stocks.
-        RECC_System.StockDict['dS_0']   = msc.Stock(Name='System environment stock change', P_Res=0, Type=1,
-                                                 Indices = 't,e', Values=None, Uncert=None,
-                                                 ID=None, UUID=None)
-        
-        RECC_System.StockDict['S_7']    = msc.Stock(Name='In-use stock', P_Res=7, Type=0,
-                                                 Indices = 't,c,r,g,m,e', Values=None, Uncert=None,
-                                                 ID=None, UUID=None)
-        
-        RECC_System.StockDict['dS_7']   = msc.Stock(Name='In-use stock change', P_Res=7, Type=1,
-                                                 Indices = 't,c,r,g,m,e', Values=None, Uncert=None,
-                                                 ID=None, UUID=None)
-        
-        RECC_System.StockDict['S_10']   = msc.Stock(Name='Fabrication scrap buffer', P_Res=10, Type=0,
-                                                 Indices = 't,c,o,w,e', Values=None, Uncert=None,
-                                                 ID=None, UUID=None)
-        
-        RECC_System.StockDict['dS_10']  = msc.Stock(Name='Fabrication scrap buffer change', P_Res=10, Type=1,
-                                                 Indices = 't,o,w,e', Values=None, Uncert=None,
-                                                 ID=None, UUID=None)
-        
-        RECC_System.StockDict['S_12']   = msc.Stock(Name='secondary material buffer', P_Res=10, Type=0,
-                                                 Indices = 't,o,m,e', Values=None, Uncert=None,
-                                                 ID=None, UUID=None)
-        
-        RECC_System.StockDict['dS_12']  = msc.Stock(Name='Secondary material buffer change', P_Res=10, Type=1,
-                                                 Indices = 't,o,m,e', Values=None, Uncert=None,
-                                                 ID=None, UUID=None)
-        
-        RECC_System.Initialize_StockValues() # Assign empty arrays to stocks according to dimensions.
-        RECC_System.Initialize_FlowValues() # Assign empty arrays to flows according to dimensions.
-        
-        ##########################################################
-        #    Section 5) Solve dynamic MFA model for RECC         #
-        ##########################################################
-        Mylog.info('Solve dynamic MFA model for the RECC project for all sectors chosen.')
-        # THIS IS WHERE WE EXPAND FROM THE FORMAL MODEL STRUCTURE AND CODE WHATEVER IS NECESSARY TO SOLVE THE MODEL EQUATIONS.
-        SwitchTime=Nc - Model_Duration +1 # Year when future modelling horizon starts: 1.1.2016        
+        # Sector: Industry, 11 region and global coverage, will be calculated separately and waste will be added to wast mgt. inflow for 1st region.
+        if 'ind' in SectorList:
+            
+                    # Define system variables: Flows.    
+                    RECC_System.FlowDict['F_0_3']   = msc.Flow(Name='ore input', P_Start=0, P_End=3,
+                                                             Indices='t,m,e', Values=None, Uncert=None,
+                                                             Color=None, ID=None, UUID=None)
+                    
+                    RECC_System.FlowDict['F_3_4']   = msc.Flow(Name='primary material production' , P_Start = 3, P_End = 4, 
+                                                             Indices = 't,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_4_5']   = msc.Flow(Name='primary material consumption' , P_Start = 4, P_End = 5, 
+                                                             Indices = 't,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_5_6']   = msc.Flow(Name='manufacturing output' , P_Start = 5, P_End = 6, 
+                                                             Indices = 't,l,g,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                        
+               
+                    RECC_System.FlowDict['F_5_10']  = msc.Flow(Name='new scrap' , P_Start = 5, P_End = 10, 
+                                                             Indices = 't,l,w,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_10_9']  = msc.Flow(Name='scrap use' , P_Start = 10, P_End = 9, 
+                                                             Indices = 't,l,w,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_9_12']  = msc.Flow(Name='secondary material production' , P_Start = 9, P_End = 12, 
+                                                             Indices = 't,l,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+            
+                    RECC_System.FlowDict['F_10_12'] = msc.Flow(Name='fabscrapdiversion' , P_Start = 10, P_End = 12, 
+                                                             Indices = 't,l,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)        
+                    
+                    RECC_System.FlowDict['F_12_5']  = msc.Flow(Name='secondary material consumption' , P_Start = 12, P_End = 5, 
+                                                             Indices = 't,l,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_12_0']  = msc.Flow(Name='excess secondary material' , P_Start = 12, P_End = 0, 
+                                                             Indices = 't,l,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_9_0']   = msc.Flow(Name='waste mgt. and remelting losses' , P_Start = 9, P_End = 0, 
+                                                             Indices = 't,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    # Define system variables: Stocks.
+                    RECC_System.StockDict['dS_0']   = msc.Stock(Name='System environment stock change', P_Res=0, Type=1,
+                                                             Indices = 't,e', Values=None, Uncert=None,
+                                                             ID=None, UUID=None)
+                    
+                    RECC_System.StockDict['S_10']   = msc.Stock(Name='Fabrication scrap buffer', P_Res=10, Type=0,
+                                                             Indices = 't,c,l,w,e', Values=None, Uncert=None,
+                                                             ID=None, UUID=None)
+                    
+                    RECC_System.StockDict['dS_10']  = msc.Stock(Name='Fabrication scrap buffer change', P_Res=10, Type=1,
+                                                             Indices = 't,l,w,e', Values=None, Uncert=None,
+                                                             ID=None, UUID=None)
+                    
+                    RECC_System.StockDict['S_12']   = msc.Stock(Name='secondary material buffer', P_Res=10, Type=0,
+                                                             Indices = 't,l,m,e', Values=None, Uncert=None,
+                                                             ID=None, UUID=None)
+                    
+                    RECC_System.StockDict['dS_12']  = msc.Stock(Name='Secondary material buffer change', P_Res=10, Type=1,
+                                                             Indices = 't,l,m,e', Values=None, Uncert=None,
+                                                             ID=None, UUID=None)
+                    
+                    RECC_System.Initialize_StockValues() # Assign empty arrays to stocks according to dimensions.
+                    RECC_System.Initialize_FlowValues() # Assign empty arrays to flows according to dimensions.
+                    
+                    ##########################################################
+                    #    Section 5) Solve dynamic MFA model for RECC         #
+                    ##########################################################
+                    Mylog.info('Solve dynamic MFA model for the RECC project for all sectors chosen.')
+                    # THIS IS WHERE WE EXPAND FROM THE FORMAL MODEL STRUCTURE AND CODE WHATEVER IS NECESSARY TO SOLVE THE MODEL EQUATIONS.
+                    SwitchTime=Nc - Model_Duration +1 # Year when future modelling horizon starts: 1.1.2016        
+            
+                    # Determine empty result containers for all sectors
+                    Stock_Detail_UsePhase_I     = np.zeros((Nt,Nc,NI,Nl)) # index structure: tcpr
+                    Outflow_Detail_UsePhase_I   = np.zeros((Nt,Nc,NI,Nl)) # index structure: tcpr
+                    Inflow_Detail_UsePhase_I    = np.zeros((Nt,NI,Nl)) # index structure: tpr
+                    
+                   
 
-        # Determine empty result containers for all sectors
-        Stock_Detail_UsePhase_p     = np.zeros((Nt,Nc,Np,Nr)) # index structure: tcpr
-        Outflow_Detail_UsePhase_p   = np.zeros((Nt,Nc,Np,Nr)) # index structure: tcpr
-        Inflow_Detail_UsePhase_p    = np.zeros((Nt,Np,Nr)) # index structure: tpr
+            
+                    RECC_System.StockDict['S_7']    = msc.Stock(Name='In-use stock', P_Res=7, Type=0,
+                                                 Indices = 't,c,l,g,m,e', Values=None, Uncert=None,
+                                                 ID=None, UUID=None)
+                
+                    RECC_System.FlowDict['F_6_7']   = msc.Flow(Name='final consumption', P_Start=6, P_End=7,
+                                                             Indices='t,l,g,m,e', Values=None, Uncert=None,
+                                                             Color=None, ID=None, UUID=None)
+                    
+                    RECC_System.FlowDict['F_7_8']   = msc.Flow(Name='EoL products' , P_Start = 7, P_End = 8, 
+                                                             Indices = 't,c,l,g,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_8_0']   = msc.Flow(Name='obsolete stock formation' , P_Start = 8, P_End = 0, 
+                                                             Indices = 't,c,l,g,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_8_9']   = msc.Flow(Name='waste mgt. input' , P_Start = 8, P_End = 9, 
+                                                             Indices = 't,l,g,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_8_17']  = msc.Flow(Name='product re-use in' , P_Start = 8, P_End = 17, 
+                                                             Indices = 't,c,l,g,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_17_6']  = msc.Flow(Name='product re-use out' , P_Start = 17, P_End = 6, 
+                                                             Indices = 't,c,l,g,m,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    RECC_System.FlowDict['F_9_10']  = msc.Flow(Name='old scrap' , P_Start = 9, P_End = 10, 
+                                                             Indices = 't,l,w,e', Values=None, Uncert=None, 
+                                                             Color = None, ID = None, UUID = None)
+                    
+                    
+                    RECC_System.StockDict['dS_7']   = msc.Stock(Name='In-use stock change', P_Res=7, Type=1,
+                                                 Indices = 't,c,l,g,m,e', Values=None, Uncert=None,
+                                                 ID=None, UUID=None)
+                    
+                    
+                    Mylog.info('Calculate inflows and outflows for use phase, industry.')
+                    # 1) Determine total stock and apply stock-driven model
+                    SF_Array                    = np.zeros((Nc,Nc,NI,Nl)) # survival functions, by year, age-cohort, good, and region. PDFs are stored externally because recreating them with scipy.stats is slow.
+                    
+                    #Get historic stock at end of 2015 by age-cohort, and covert unit to Vehicles: million.
+                    TotalStock_UsePhase_Hist_ind = RECC_System.ParameterDict['2_S_RECC_FinalProducts_2015_industry'].Values[:,:,:,:,0,:]
+                    
+                   
+#                    # 2) Include (or not) the RE strategies for the use phase:
+#                    # Include_REStrategy_MoreIntenseUse:
+#                    if ScriptConfig['Include_REStrategy_MoreIntenseUse'] == 'True': 
+#                        # quick fix: calculate counter-factual scenario: 20% decrease of stock levels by 2050 compared to scenario reference
+#                        if SName != 'LED':
+#                            MIURamp       = np.ones((Nt+7))
+#                            MIURamp[8:38] = np.arange(1,0.8,-0.00667)
+#                            MIURamp[38::] = 0.8
+#                            MIURamp = np.convolve(MIURamp, np.ones((8,))/8, mode='valid')
+#                            TotalStockCurves_UsePhase_p = TotalStockCurves_UsePhase_p * np.einsum('t,r->tr',MIURamp,np.ones((Nr)))
+                        
+                    # Include_REStrategy_LifeTimeExtension: Product lifetime extension.
+                    # First, replicate lifetimes for all age-cohorts
+                    Par_RECC_ProductLifetime_ind = np.einsum('cr,p->pcr',np.ones((Nc,Nl)),RECC_System.ParameterDict['3_LT_RECC_ProductLifetime_industry'].Values[:])
+#                    # Second, change lifetime of future age-cohorts according to lifetime extension parameter
+#                   # This is equation 10 of the paper:
+#                    if ScriptConfig['Include_REStrategy_LifeTimeExtension'] == 'True':
+#                        Par_RECC_ProductLifetime_p[:,:,SwitchTime -1::] = np.einsum('crp,prc->prc',1 + np.einsum('cr,pr->crp',RECC_System.ParameterDict['3_SHA_RECC_REStrategyScaleUp_r'].Values[:,:,mS,mR],RECC_System.ParameterDict['6_PR_LifeTimeExtension_passvehicles'].Values[:,:,mS]),Par_RECC_ProductLifetime_p[:,:,SwitchTime -1::])
+#                    
+                    # 3) Dynamic stock model
+                    # Build pdf array from lifetime distribution: Probability of survival.
+                    for p in tqdm(range(0, Np), unit=' vehicles types'):
+                        for r in range(0, Nr):
+                            LifeTimes = Par_RECC_ProductLifetime_p[p, r, :]
+                            lt = {'Type'  : 'Normal',
+                                  'Mean'  : LifeTimes,
+                                  'StdDev': 0.3 * LifeTimes}
+                            SF_Array[:, :, p, r] = dsm.DynamicStockModel(t=np.arange(0, Nc, 1), lt=lt).compute_sf().copy()
+                            np.fill_diagonal(SF_Array[:, :, p, r],1) # no outflows from current year, this would break the mass balance in the calculation routine below, as the element composition of the current year is not yet known.
+                            # Those parts of the stock remain in use instead.
+            
+                    # Compute evolution of 2015 in-use stocks: initial stock evolution separately from future stock demand and stock-driven model
+                    for r in range(0,Nr):   
+                        FutureStock                 = np.zeros((Nc))
+                        FutureStock[SwitchTime::]   = TotalStockCurves_UsePhase_p[1::, r].copy()# Future total stock
+                        InitialStock                = TotalStock_UsePhase_Hist_cpr[:,:,r].copy()
+                        InitialStocksum             = InitialStock.sum()
+                        StockMatch_2015[Sector_pav_loc,r] = TotalStockCurves_UsePhase_p[0, r]/InitialStocksum
+                        SFArrayCombined             = SF_Array[:,:,:,r]
+                        TypeSplit                   = np.zeros((Nc,Np))
+                        TypeSplit[SwitchTime::,:]   = RECC_System.ParameterDict['3_SHA_TypeSplit_Vehicles'].Values[Sector_pav_loc,:,1::,r,mS].transpose() # indices: pc
+                        
+                        RECC_dsm                    = dsm.DynamicStockModel(t=np.arange(0,Nc,1), s=FutureStock.copy(), lt = lt)  # The lt parameter is not used, the sf array is handed over directly in the next step.   
+                        Var_S, Var_O, Var_I, IFlags = RECC_dsm.compute_stock_driven_model_initialstock_typesplit_negativeinflowcorrect(SwitchTime,InitialStock,SFArrayCombined,TypeSplit,NegativeInflowCorrect = True)
+                        
+                        # Below, the results are added with += because the different commodity groups (buildings, vehicles) are calculated separately
+                        # to introduce the type split for each, but using the product resolution of the full model with all sectors.
+                        Stock_Detail_UsePhase_p[0,:,:,r]     += InitialStock.copy() # cgr, needed for correct calculation of mass balance later.
+                        Stock_Detail_UsePhase_p[1::,:,:,r]   += Var_S[SwitchTime::,:,:].copy() # tcpr
+                        Outflow_Detail_UsePhase_p[1::,:,:,r] += Var_O[SwitchTime::,:,:].copy() # tcpr
+                        Inflow_Detail_UsePhase_p[1::,:,r]    += Var_I[SwitchTime::,:].copy() # tpr
+                        # Check for negative inflows:
+                        if IFlags.sum() != 0:
+                            NegInflowFlags[Sector_pav_loc,mS,mR] = 1 # flag this scenario
+            
+                    # Here so far: Units: Vehicles: million. for stocks, X/yr for flows.
+                    StockCurves_Totl[:,Sector_pav_loc,mS,mR] = TotalStockCurves_UsePhase_p.sum(axis =1)
+                    StockCurves_Prod[:,Sector_pav_rge,mS,mR] = np.einsum('tcpr->tp',Stock_Detail_UsePhase_p)
+                    pCStocksCurves[:,Sector_pav_loc,:,mS,mR] = ParameterDict['2_S_RECC_FinalProducts_Future_passvehicles'].Values[mS,:,Sector_pav_loc,:]
+                    Population[:,:,mS,mR]                    = ParameterDict['2_P_RECC_Population_SSP_32R'].Values[0,:,:,mS]
+                    Inflow_Prod[:,Sector_pav_rge,mS,mR]      = np.einsum('tpr->tp',Inflow_Detail_UsePhase_p)
+                    Outflow_Prod[:,Sector_pav_rge,mS,mR]     = np.einsum('tcpr->tp',Outflow_Detail_UsePhase_p)
         
-        Stock_Detail_UsePhase_B     = np.zeros((Nt,Nc,NB,Nr)) # index structure: tcBr
-        Outflow_Detail_UsePhase_B   = np.zeros((Nt,Nc,NB,Nr)) # index structure: tcBr
-        Inflow_Detail_UsePhase_B    = np.zeros((Nt,NB,Nr)) # index structure: tBr
+             
+        # Sector: Appliances, global coverage, will be calculated separately and waste will be added to wast mgt. inflow for 1st region.
+        if 'app' in SectorList:            
+            None
+    
     
         # Sector: Passenger vehicles
         if 'pav' in SectorList:
@@ -769,13 +862,8 @@ for mS in range(0,NS):
         if 'nrb' in SectorList:
             None
             
-        # Sector: Industry, 11 region and global coverage, will be calculated separately and waste will be added to wast mgt. inflow for 1st region.
-        if 'ind' in SectorList:
-            None
-            
-        # Sector: Appliances, global coverage, will be calculated separately and waste will be added to wast mgt. inflow for 1st region.
-        if 'app' in SectorList:            
-            None
+
+
 
         # ABOVE: each sector separate, individual regional resolution. BELOW: all sectors together, global total.
         # Prepare parameters:        
