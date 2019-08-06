@@ -51,7 +51,7 @@ import RECC_Paths # Import path file
 #imp.load_source(RECC_Paths , 'C:/Users/sklose/Documents/ODYM-RECC-Repos/RECC-Cu-Repo/ODYM-RECC Cu/RECC_Paths.py') 
 
 DFilePathIMAGE = RECC_Paths.rawdata_pathIMAGE
-ResultsPath= os.path.join(RECC_Paths.rawdata_path,'Data')
+ResultsPath= os.path.join(RECC_Paths.data_path_raw)
 ## Define indices for MESSAGE data
 #Regions_M  = ['AFR','CPA','EEU','FSU','LAC','MEA','NAM','PAO','PAS','SAS','WEU','World']
 #Model_M    = ['CD_Links_SSP1_v2','CD_Links_SSP2_v2','CD_Links_SSP3_v2']
@@ -84,7 +84,7 @@ Products = ['Fan', 'Air-cooler' ,'Air-conditioning', 'Refridgerator','Microwave'
             'Television','VCR/DVD player','PC & Laptop computers','Other small appliances']
 
 
-
+time_total = np.arange(1971,2051)
 time_Historic= np.arange(1971,2016)
 
 time_Future= np.arange(2016,2051)
@@ -97,68 +97,68 @@ for s in range (0, len(Scenarios)):
         for t in range (0, len(time_Historic)):
             Par_inflow_hist[s,t,p] = DF_Inflow_s['value'].loc[(DF_Inflow_s['aspect 6 : commodity']==Products[p]) & (DF_Inflow_s['aspect 5 : time']==time_Historic[t]) & (DF_Inflow_s['aspect 4 : scenario']==Scenarios[s])]
 
-
-Lifetime = np.zeros((len(time_Historic),len(Products)))
-
-for t in range (0, len(time_Historic)):
-    Lifetime[t,:] = Par_Lifetime[:]
-    
-Sigma = np.zeros((len(time_Historic),len(Products)))
-
-for t in range (0, len(time_Historic)):
-    Sigma[t,:] = Par_Sigma[:]
-    
-timeDSM = time_Historic
-
-LifetimeDSM = Lifetime[:,:]
-StdDevDSM = Sigma[:,:]
-
-Stock_by_cohort = np.zeros((len(Scenarios),len(Products),len(time_Historic),len(time_Historic)))
-
-appended_S_C_2015 = []
-
-for p in range (0,len(Products)):
-    for s in range (0, len(Scenarios)):
-        DSM= DynamicStockModel(t = timeDSM-1971, i = Par_inflow_hist[s,:,p], lt = {'Type': 'Normal', 'Mean': Lifetime[:,p], 'StdDev': Sigma[:,p] })
-
-        Stock_by_cohort[s,p,:,:] = DSM.compute_s_c_inflow_driven()
-
-        S_C_2015 = pd.DataFrame({'Stock in Year':'2015','Year':time_Historic,'Scenario':Scenarios[s],'RCP_Scen':'Baseline(unmitigated)','Product':Products[p],'Value':Stock_by_cohort[s,p,44,:]}) #Value: Stock in 2015
-
-        S_C_2015 = S_C_2015[['Stock in Year','Year','Scenario','RCP_Scen','Product','Value']]
-        
-        appended_S_C_2015.append(S_C_2015)
-    
-appened_S_C_2015 = pd.concat(appended_S_C_2015)
-
-
-#Replace IMAGE Scenario names with ODYM Scenario names
-Scenario_ODYM = ['SSP1','SSP2','SSP3']
-RCPScen_ODYM  = ['Baseline(unmitigated)','RCP2.6']
-
-appened_S_C_2015.loc[appened_S_C_2015.Scenario == 'SSP2_450ppm', 'RCP_Scen'] = 'RCP2.6'
-appened_S_C_2015['Scenario'].replace(   to_replace='SSP2_450ppm',value='SSP2',   inplace=True)    
-
-#appened_S_C_2015.loc[appened_S_C_2015.Scenario.isin('SSP1','SSP2'), 'RCP_Scen'] = 
-
-        
-book=openpyxl.load_workbook(ResultsPath+'\\2_S_RECC_FinalProducts_2015_appliances_V1.0.xlsx' )
+#
+#Lifetime = np.zeros((len(time_Historic),len(Products)))
+#
+#for t in range (0, len(time_Historic)):
+#    Lifetime[t,:] = Par_Lifetime[:]
+#    
+#Sigma = np.zeros((len(time_Historic),len(Products)))
+#
+#for t in range (0, len(time_Historic)):
+#    Sigma[t,:] = Par_Sigma[:]
+#    
+#timeDSM = time_Historic
+#
+#LifetimeDSM = Lifetime[:,:]
+#StdDevDSM = Sigma[:,:]
+#
+#Stock_by_cohort = np.zeros((len(Scenarios),len(Products),len(time_Historic),len(time_Historic)))
+#
+#appended_S_C_2015 = []
+#
+#for p in range (0,len(Products)):
+#    for s in range (0, len(Scenarios)):
+#        DSM= DynamicStockModel(t = timeDSM-1971, i = Par_inflow_hist[s,:,p], lt = {'Type': 'Normal', 'Mean': Lifetime[:,p], 'StdDev': Sigma[:,p] })
+#
+#        Stock_by_cohort[s,p,:,:] = DSM.compute_s_c_inflow_driven()
+#
+#        S_C_2015 = pd.DataFrame({'Stock in Year':'2015','Year':time_Historic,'Scenario':Scenarios[s],'RCP_Scen':'Baseline(unmitigated)','Product':Products[p],'Value':Stock_by_cohort[s,p,44,:]}) #Value: Stock in 2015
+#
+#        S_C_2015 = S_C_2015[['Stock in Year','Year','Scenario','RCP_Scen','Product','Value']]
 #        
-writer=pd.ExcelWriter(ResultsPath+'\\2_S_RECC_FinalProducts_2015_appliances_V1.0.xlsx', engine='openpyxl')
+#        appended_S_C_2015.append(S_C_2015)
+#    
+#appened_S_C_2015 = pd.concat(appended_S_C_2015)
 #
-writer.book=book
 #
-writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+##Replace IMAGE Scenario names with ODYM Scenario names
+#Scenario_ODYM = ['SSP1','SSP2','SSP3']
+#RCPScen_ODYM  = ['Baseline(unmitigated)','RCP2.6']
 #
-appened_S_C_2015.to_excel(writer, sheet_name='values',startcol=0,startrow=0,index=False,header=True)
-            
+#appened_S_C_2015.loc[appened_S_C_2015.Scenario == 'SSP2_450ppm', 'RCP_Scen'] = 'RCP2.6'
+#appened_S_C_2015['Scenario'].replace(   to_replace='SSP2_450ppm',value='SSP2',   inplace=True)    
 #
-writer.save()
+##appened_S_C_2015.loc[appened_S_C_2015.Scenario.isin('SSP1','SSP2'), 'RCP_Scen'] = 
+#
+#        
+#book=openpyxl.load_workbook(ResultsPath+'\\2_S_RECC_FinalProducts_2015_appliances_V1.0_raw.xlsx' )
+##        
+#writer=pd.ExcelWriter(ResultsPath+'\\2_S_RECC_FinalProducts_2015_appliances_V1.0_raw.xlsx', engine='openpyxl')
+##
+#writer.book=book
+##
+#writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+##
+#appened_S_C_2015.to_excel(writer, sheet_name='values',startcol=0,startrow=0,index=False,header=True)
+#            
+##
+#writer.save()
 
 
 ###### Create RECC 1_F_RECC_FinalProducts_Future_appliances
 
-Par_demand_future = DF_Inflow_s.loc[DF_Inflow_s['aspect 5 : time'].isin(time_Future)]
+Par_demand_future = DF_Inflow_s.loc[DF_Inflow_s['aspect 5 : time'].isin(time_total)]
 Par_demand_future = Par_demand_future.loc[Par_demand_future['aspect 6 : commodity'].isin(Products)]
 Par_demand_future = Par_demand_future.loc[Par_demand_future['aspect 4 : scenario'].isin(Scenarios)]
 
@@ -177,9 +177,9 @@ Par_demand_future = Par_demand_future[['Year','Scenario','RCP_Scen','Product','V
 
 
 
-book=openpyxl.load_workbook(ResultsPath+'\\1_F_RECC_FinalProducts_Future_appliances_V1.0.xlsx' )
+book=openpyxl.load_workbook(ResultsPath+'\\1_F_RECC_FinalProducts_Future_appliances_V1.0_raw.xlsx' )
 #        
-writer=pd.ExcelWriter(ResultsPath+'\\1_F_RECC_FinalProducts_Future_appliances_V1.0.xlsx', engine='openpyxl')
+writer=pd.ExcelWriter(ResultsPath+'\\1_F_RECC_FinalProducts_Future_appliances_V1.0_raw.xlsx', engine='openpyxl')
 #
 writer.book=book
 #

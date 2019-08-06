@@ -51,7 +51,7 @@ import RECC_Paths # Import path file
 #imp.load_source(RECC_Paths , 'C:/Users/sklose/Documents/ODYM-RECC-Repos/RECC-Cu-Repo/ODYM-RECC Cu/RECC_Paths.py') 
 
 DFilePathIMAGE = RECC_Paths.rawdata_pathIMAGE
-ResultsPath= os.path.join(RECC_Paths.rawdata_path,'Data')
+ResultsPath= os.path.join(RECC_Paths.data_path_raw)
 
 ## Read data into pandas dataframe:
 DF_MC = pd.read_excel(os.path.join(DFilePathIMAGE,'3_MC_RECC_appliances_DEETMAN_2018.xlsx'), sep = ',', encoding = 'unicode_escape', sheet_name='Data')
