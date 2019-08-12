@@ -54,22 +54,23 @@ DFilePathMESSAGE = RECC_Paths.rawdata_pathMESSAGE
 ResultsPath= os.path.join(RECC_Paths.rawdata_path,'Data','Raw')
 # Define indices for MESSAGE data
 Regions_M  = ['AFR','CPA','EEU','FSU','LAC','MEA','NAM','PAO','PAS','SAS','WEU','World']
-Model_M    = ['CD_Links_SSP1_v2','CD_Links_SSP2_v2','CD_Links_SSP3_v2']
-Scenario_M = ['NPi','NPi2020_1000'] # for BAU/no policy scenario after 2030 and 2dC scenario
+Model_M    = ['CD_Links_SSP1_v2_release_1.2_emiupd','CD_Links_SSP2_v2','CD_Links_SSP3_v2','CD_Links_SSP2_v2_release_1.2_emiupd']
+Scenario_M = ['NPi','NPi2020_1000','LED_v0.3'] # for BAU/no policy scenario after 2030 and 2dC scenario
 Years_M    = [1990,1995,2000,2005,2010,2020,2030,2040,2050,2060,2070,2080,2090,2100,2110]
 # For meaning of scenarios, cf. https://db1.ene.iiasa.ac.at/CDLINKSDB/dsd?Action=htmlpage&page=10
 
 # Define indices for ODYM-RECC data
-Scenario_R = ['SSP1','SSP2','SSP3']
-RCPScen_R  = ['Baseline(unmitigated)','RCP2.6']
+Scenario_R = ['SSP1','SSP2','SSP3','LED']
+RCPScen_R  = ['Baseline(unmitigated)','RCP2.6','RCP2.6']
 Regions_R  = ['R32CAN','R32CHN','R32EU12-M','R32IND','R32JPN','R32USA','France','Germany','Italy','Poland','Spain','UK','Oth_R32EU15','Oth_R32EU12-H','World']
 Time_R     = np.arange(2000,2101,1)
 TimeL_R    = [i for i in Time_R] 
 # Read data into pandas dataframe:
 DF = pd.read_csv(os.path.join(DFilePathMESSAGE,'CD_Links_SSP1-3.csv'), sep = ',', encoding = 'unicode_escape')
 
+DF_LEDadded = pd.read_csv(os.path.join(DFilePathMESSAGE,'messageix_native_20190808-134140.csv'), sep = ',', encoding = 'unicode_escape')
 
-DF.head(5)
+DF_LEDadded.head(5)
 
 Path_Copper_GW = os.path.join(DFilePathMESSAGE) + '\\Copper_MI.xlsx'   ##Import Data on Material Intensity of kommer [kt/GW]
 CopperGW_WB_df = pd.read_excel(Path_Copper_GW)
@@ -78,9 +79,9 @@ CopperGW_WB_df.set_index(CopperGW_WB_df['VARIABLE'])
 
 
 
-print(DF.shape)
-print(len(DF.index))
-list(DF.columns.values) # all columns used
+print(DF_LEDadded.shape)
+print(len(DF_LEDadded.index))
+list(DF_LEDadded.columns.values) # all columns used
 
 
        
@@ -344,11 +345,11 @@ EGListLookup = [4,
 
 #### Convert MESSAGE Cappacity Addition data in ODYM format
 
-CA= DF.loc[DF['VARIABLE'].isin(CA_EGList_MSG) & DF['SCENARIO'].isin(Scenario_M) & DF['MODEL'].isin(Model_M)] # extract emissions from energy supply, in Mt CO2/yr
+CA= DF_LEDadded.loc[DF_LEDadded['VARIABLE'].isin(CA_EGList_MSG) & DF_LEDadded['SCENARIO'].isin(Scenario_M) & DF_LEDadded['MODEL'].isin(Model_M)] # extract emissions from energy supply, in Mt CO2/yr
         
 [CA['VARIABLE'].replace(   to_replace=[CA_EGList_MSG[i]],value=EG_List_ODYM[EGListLookup[i]],   inplace=True) for i in range(0,len(CA_EGList_MSG))]    
-[CA['MODEL'].replace(   to_replace=[Model_M[i]],value=Scenario_R[i],   inplace=True) for i in range(0,3)]
-[CA['SCENARIO'].replace(to_replace=[Scenario_M[i]],value=RCPScen_R[i], inplace=True) for i in range(0,2)]
+[CA['MODEL'].replace(   to_replace=[Model_M[i]],value=Scenario_R[i],   inplace=True) for i in range(0,4)]
+[CA['SCENARIO'].replace(to_replace=[Scenario_M[i]],value=RCPScen_R[i], inplace=True) for i in range(0,3)]
         
 ### sum over ALL values with same model, scenario and Variable
 dCA = CA.groupby(['REGION', 'MODEL','SCENARIO','VARIABLE']).sum()
@@ -361,11 +362,11 @@ ddCA = dCA.loc[:, (dCA != 0).any(axis=0)] ##delete columns that are zero
 
 #### Convert MESSAGE Cappacity (Stock) data in ODYM format
 
-Capacity= DF.loc[DF['VARIABLE'].isin(C_EGList_MSG) & DF['SCENARIO'].isin(Scenario_M) & DF['MODEL'].isin(Model_M)] # extract emissions from energy supply, in Mt CO2/yr
+Capacity= DF_LEDadded.loc[DF_LEDadded['VARIABLE'].isin(C_EGList_MSG) & DF_LEDadded['SCENARIO'].isin(Scenario_M) & DF_LEDadded['MODEL'].isin(Model_M)] # extract emissions from energy supply, in Mt CO2/yr
         
 [Capacity['VARIABLE'].replace(   to_replace=[C_EGList_MSG[i]],value=EG_List_ODYM[EGListLookup[i]],   inplace=True) for i in range(0,len(C_EGList_MSG))]    
-[Capacity['MODEL'].replace(   to_replace=[Model_M[i]],value=Scenario_R[i],   inplace=True) for i in range(0,3)]
-[Capacity['SCENARIO'].replace(to_replace=[Scenario_M[i]],value=RCPScen_R[i], inplace=True) for i in range(0,2)]
+[Capacity['MODEL'].replace(   to_replace=[Model_M[i]],value=Scenario_R[i],   inplace=True) for i in range(0,4)]
+[Capacity['SCENARIO'].replace(to_replace=[Scenario_M[i]],value=RCPScen_R[i], inplace=True) for i in range(0,3)]
         
 ### sum over ALL values with same model, scenario and Variable
 dCapacity = Capacity.groupby(['REGION', 'MODEL','SCENARIO','VARIABLE']).sum()
@@ -549,8 +550,8 @@ writer.save()
 
 Lifetime= DF.loc[DF['VARIABLE'].isin(Lft_EGList_MSG) & DF['SCENARIO'].isin(Scenario_M) & DF['MODEL'].isin(Model_M)] # extract emissions from energy supply, in Mt CO2/yr
 [Lifetime['VARIABLE'].replace(   to_replace=[Lft_EGList_MSG[i]],value=EG_List_ODYM[EGListLookup[i]],   inplace=True) for i in range(0,len(Lft_EGList_MSG))]    
-[Lifetime['MODEL'].replace(   to_replace=[Model_M[i]],value=Scenario_R[i],   inplace=True) for i in range(0,3)]
-[Lifetime['SCENARIO'].replace(to_replace=[Scenario_M[i]],value=RCPScen_R[i], inplace=True) for i in range(0,2)]
+[Lifetime['MODEL'].replace(   to_replace=[Model_M[i]],value=Scenario_R[i],   inplace=True) for i in range(0,4)]
+[Lifetime['SCENARIO'].replace(to_replace=[Scenario_M[i]],value=RCPScen_R[i], inplace=True) for i in range(0,3)]
 
 dLifetime = Lifetime.groupby(['REGION', 'MODEL','SCENARIO','VARIABLE']).max()
 
