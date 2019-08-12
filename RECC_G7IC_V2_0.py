@@ -360,11 +360,6 @@ Sector_app_rge = np.arange(90,102,1)
 
 # 6) Fabrication yield:
 # Extrapolate 2050-2060 as 2015 values
-index = PL_Names.index('4_PY_Manufacturing')
-ParameterDict[PL_Names[index]].Values[:,:,:,:,1::,:] = np.einsum('t,mwgFr->mwgFtr',np.ones(160),ParameterDict[PL_Names[index]].Values[:,:,:,:,0,:])
-
-# 7) EoL RR, apply world average to all regions
-ParameterDict['4_PY_EoL_RecoveryRate'].Values = np.einsum('gmwW,r->grmwW',ParameterDict['4_PY_EoL_RecoveryRate'].Values[:,0,:,:,:],np.ones((Nr)))
 
 ## 8) Energy carrier split of vehicles, replicate fixed values for all regions and age-cohorts etc.
 #ParameterDict['3_SHA_EnergyCarrierSplit_Vehicles'].Values = np.einsum('pn,crVS->cprVnS',ParameterDict['3_SHA_EnergyCarrierSplit_Vehicles'].Values[115,:,0,3,:,SSP1index].copy(),np.ones((Nc,Nr,NV,NS)))
@@ -768,7 +763,7 @@ if 'ind' in SectorList:
         plt.subplot2grid((2,2),(0,0))
         plt.stackplot(time_dsm+1900, Total_cu_inflow_ind[:,:,:,1,0].sum(axis=0))
         plt.title('Cu inflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[1] +' '+ IndexTable.Classification['Scenario_RCP'].Items[0]  )
-        plt.ylabel('Cu outflow [kt/year]')
+        plt.ylabel('Cu inflow [kt/year]')
 
       #  Figurecounter += 1
 
@@ -782,7 +777,7 @@ if 'ind' in SectorList:
         plt.subplot2grid((2,2),(1,0))
         plt.stackplot(time_dsm+1900, Total_cu_inflow_ind[:,:,:,2,0].sum(axis=0))
         plt.title('Cu inflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[2] +' '+  IndexTable.Classification['Scenario_RCP'].Items[0]  )
-        plt.ylabel('Cu outflow [kt/year]')
+        plt.ylabel('Cu inflow [kt/year]')
 
      #   Figurecounter += 1
         
@@ -830,6 +825,54 @@ if 'ind' in SectorList:
         plt.show()
         
 
+
+
+# D) Calculate energy demand of the other industries
+SysVar_EnergyDemand_PrimaryProd   = 1000 * np.einsum('Pnco,tSR->tPncoSR',RECC_System.ParameterDict['4_EI_ProcessEnergyIntensity'].Values[:,:,:,:],np.ones((Nt,NS,NR)))
+#SysVar_EnergyDemand_Manufacturing = np.zeros((Nt,Nn))
+SysVar_EnergyDemand_Manufacturing = np.einsum('Fnco,tSR->tFncoSR',RECC_System.ParameterDict['4_EI_ManufacturingEnergyIntensity'].Values[:,:,:,:],np.ones((Nt,NS,NR)))
+SysVar_EnergyDemand_WasteMgt      = 1000 * np.einsum('wnco,tSR->twncoSR',RECC_System.ParameterDict['4_EI_WasteMgtEnergyIntensity'].Values[:,:,:,:],np.ones((Nt,NS,NR)))
+SysVar_EnergyDemand_Remelting     = 1000 * np.einsum('mnco,tSR->tmncoSR',RECC_System.ParameterDict['4_EI_RemeltingEnergyIntensity'].Values[:,:,:,:],np.ones((Nt,NS,NR)))
+ #Unit: TJ/yr.
+ 
+
+
+F_1_2 = np.zeros((Nt,Nl,NI,NS,NR))
+F_2_3 = np.zeros((Nt, No, Nm,NS,NR)) 
+F_3_4 = np.zeros((Nt,No,Nw,NS,NR))
+F_4_1 = np.zeros((Nt, No, Nn,NS,NR))
+
+S_2 = np.zeros((Nt,Nm,NS,NR))
+S_2 = np.zeros((Nt,Nm,NS,NR))
+
+for S in range(0, NS):
+    for R in range(0, NR):
+
+         F_1_2[:,:,:,S,R] = np.einsum('pt,p -> pt',F_1_2 Total_cu_outflow_ind[r,:,:,S,R],RECC_dsm_ind_o[r,S,R,:,:],Par_RECC_MC_Cu_ind) 
+        Total_cu_inflow_ind[r,:,:,S,R]  = np.einsum('pt,p -> pt',i_Inflow_ind[r,S,R,:,:],Par_RECC_MC_Cu_ind) 
+
+
+index = PL_Names.index('4_PY_Manufacturing')
+ParameterDict[PL_Names[index]].Values[:,:,:,:,1::,:] = np.einsum('t,mwgFr->mwgFtr',np.ones(160),ParameterDict[PL_Names[index]].Values[:,:,:,:,0,:])
+
+# 7) EoL RR, apply world average to all regions
+ParameterDict['4_PY_EoL_RecoveryRate'].Values = np.einsum('gmwW,r->grmwW',ParameterDict['4_PY_EoL_RecoveryRate'].Values[:,0,:,:,:],np.ones((Nr)))
+
+# SysVar_EnergyDemand_PrimaryProd   = 1000 * np.einsum('mn,tm->tmn',RECC_System.ParameterDict['4_EI_ProcessEnergyIntensity'].Values[:,:,110,0],RECC_System.FlowDict['F_3_4'].Values[:,:,0])
+#SysVar_EnergyDemand_Manufacturing = np.zeros((Nt,Nn))
+#SysVar_EnergyDemand_Manufacturing += np.einsum('pn,tpr->tn',RECC_System.ParameterDict['4_EI_ManufacturingEnergyIntensity'].Values[Sector_pav_rge,:,110,-1],Inflow_Detail_UsePhase_p)
+#SysVar_EnergyDemand_Manufacturing += np.einsum('Bn,tBr->tn',RECC_System.ParameterDict['4_EI_ManufacturingEnergyIntensity'].Values[Sector_reb_rge,:,110,-1],Inflow_Detail_UsePhase_B) 
+#SysVar_EnergyDemand_WasteMgt      = 1000 * np.einsum('wn,trw->tn',RECC_System.ParameterDict['4_EI_WasteMgtEnergyIntensity'].Values[:,:,110,-1],RECC_System.FlowDict['F_9_10'].Values[:,:,:,0])
+#SysVar_EnergyDemand_Remelting     = 1000 * np.einsum('mn,trm->tn',RECC_System.ParameterDict['4_EI_RemeltingEnergyIntensity'].Values[:,:,110,-1],RECC_System.FlowDict['F_9_12'].Values[:,:,:,0])
+#SysVar_EnergyDemand_Remelting_m   = 1000 * np.einsum('mn,trm->tnm',RECC_System.ParameterDict['4_EI_RemeltingEnergyIntensity'].Values[:,:,110,-1],RECC_System.FlowDict['F_9_12'].Values[:,:,:,0])
+# #Unit: TJ/yr.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
 # Sector: Appliances, global coverage, will be calculated separately and waste will be added to wast mgt. inflow for 1st region.
 if 'app' in SectorList:            
@@ -1063,7 +1106,8 @@ if 'app' in SectorList:
 ##            Par_RECC_MC[:,:,Sector_pav_rge,:,mS] = np.einsum('cmpr->pcmr',RECC_System.ParameterDict['3_MC_RECC_Vehicles_RECC'].Values[:,:,:,:,mS])
 ##            Par_RECC_MC[:,:,Sector_reb_rge,:,mS] = np.einsum('cmBr->Bcmr',RECC_System.ParameterDict['3_MC_RECC_Buildings_RECC'].Values[:,:,:,:,mS])
 ##            # Units: Vehicles: kg/unit, Buildings: kg/m2  
-#            
+
+
 # historic element composition of materials:
 Par_Element_Composition_of_Materials_m   = np.zeros((Nc,Nm,Ne)) # cme, produced in age-cohort c. Applies to new manufactured goods.
 Par_Element_Composition_of_Materials_m[0:Nc-Nt+1,:,:] = np.einsum('c,me->cme',np.ones(Nc-Nt+1),RECC_System.ParameterDict['3_MC_Elements_Materials_ExistingStock'].Values)
@@ -1109,7 +1153,13 @@ ReUseFactor_tmgo = np.einsum('t,mgo->tmgo',np.ones((Nt)),RECC_System.ParameterDi
 #ReUseFactor_tmBrS = np.einsum('tmBr,S->tmBrS',np.einsum('tr,mBr->tmBr',RECC_System.ParameterDict['3_SHA_RECC_REStrategyScaleUp_r'].Values[:,:,mS,mR],RECC_System.ParameterDict['6_PR_ReUse_Bld'].Values),np.ones((NS)))
 
 Mylog.info('Translate total flows into individual materials and elements, for 2015 and historic age-cohorts.')
-            
+
+
+Total_cu_outflow_ind[r,:,:,S,R] = np.einsum('pt,p -> pt',RECC_dsm_ind_o[r,S,R,:,:],Par_RECC_MC_Cu_ind) 
+Total_cu_inflow_ind[r,:,:,S,R]  = np.einsum('pt,p -> pt',i_Inflow_ind[r,S,R,:,:],Par_RECC_MC_Cu_ind) 
+#            
+
+
 # 1) Inflow, outflow, and stock first year
 RECC_System.FlowDict['F_6_7'].Values[0,:,Sector_pav_rge,:,:]   = \
 np.einsum('prme,pr->prme',Par_Element_Material_Composition_of_Products[SwitchTime-1,:,Sector_pav_rge,:,:],Inflow_Detail_UsePhase_p[0,:,:])/1000 # all elements, Indices='t,r,p,m,e'  
@@ -1408,7 +1458,7 @@ for t in tqdm(range(1, Nt), unit=' years'): # 1: 2016
 #        SysVar_EnergyDemand_UsePhase_ByEnergyCarrier_pav = np.einsum('cprVn,tcprV->trpn',RECC_System.ParameterDict['3_SHA_EnergyCarrierSplit_Vehicles' ].Values[:,:,:,:,:,mS] ,SysVar_EnergyDemand_UsePhase_Total_pav[:,:,:,:,-1,:].copy())
 #        SysVar_EnergyDemand_UsePhase_ByEnergyCarrier_reb = np.einsum('Vrnt,tcBrV->trBn', RECC_System.ParameterDict['3_SHA_EnergyCarrierSplit_Buildings'].Values[:,mR,:,:,:],   SysVar_EnergyDemand_UsePhase_Total_reb[:,:,:,:,-1,:].copy())
 #                
-#        # D) Calculate energy demand of the other industries
+        # D) Calculate energy demand of the other industries
 #        SysVar_EnergyDemand_PrimaryProd   = 1000 * np.einsum('mn,tm->tmn',RECC_System.ParameterDict['4_EI_ProcessEnergyIntensity'].Values[:,:,110,0],RECC_System.FlowDict['F_3_4'].Values[:,:,0])
 #        SysVar_EnergyDemand_Manufacturing = np.zeros((Nt,Nn))
 #        SysVar_EnergyDemand_Manufacturing += np.einsum('pn,tpr->tn',RECC_System.ParameterDict['4_EI_ManufacturingEnergyIntensity'].Values[Sector_pav_rge,:,110,-1],Inflow_Detail_UsePhase_p)
@@ -1416,7 +1466,7 @@ for t in tqdm(range(1, Nt), unit=' years'): # 1: 2016
 #        SysVar_EnergyDemand_WasteMgt      = 1000 * np.einsum('wn,trw->tn',RECC_System.ParameterDict['4_EI_WasteMgtEnergyIntensity'].Values[:,:,110,-1],RECC_System.FlowDict['F_9_10'].Values[:,:,:,0])
 #        SysVar_EnergyDemand_Remelting     = 1000 * np.einsum('mn,trm->tn',RECC_System.ParameterDict['4_EI_RemeltingEnergyIntensity'].Values[:,:,110,-1],RECC_System.FlowDict['F_9_12'].Values[:,:,:,0])
 #        SysVar_EnergyDemand_Remelting_m   = 1000 * np.einsum('mn,trm->tnm',RECC_System.ParameterDict['4_EI_RemeltingEnergyIntensity'].Values[:,:,110,-1],RECC_System.FlowDict['F_9_12'].Values[:,:,:,0])
-#        # Unit: TJ/yr.
+        # Unit: TJ/yr.
 #        
 #        # E) Calculate total energy demand
 #        SysVar_TotalEnergyDemand = np.einsum('trpn->tn',SysVar_EnergyDemand_UsePhase_ByEnergyCarrier_pav) + np.einsum('trBn->tn',SysVar_EnergyDemand_UsePhase_ByEnergyCarrier_reb) \
