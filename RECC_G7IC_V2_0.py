@@ -687,33 +687,33 @@ if 'ind' in SectorList:
         
         graphs.figures_flow_all(time_dsm+1900,Total_cu_inflow_ind,'in' )
 
-        
+        x = np.arange(100, 200)
 
         fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(16, 10))
 
         plt.subplot2grid((2,2),(0,0))
-        plt.stackplot(time_dsm+1900, Total_cu_outflow_ind[:,:,:,1,0].sum(axis=0))
+        plt.stackplot(x+1900, Total_cu_outflow_ind[:,:,x,1,0].sum(axis=0))
         plt.title('Cu outflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[1] +' '+ IndexTable.Classification['Scenario_RCP'].Items[0]  )
         plt.ylabel('Cu outflow [kt/year]')
 
       #  Figurecounter += 1
 
         plt.subplot2grid((2,2),(0,1))
-        plt.stackplot(time_dsm+1900, Total_cu_outflow_ind[:,:,:,1,1].sum(axis=0))
+        plt.stackplot(x+1900, Total_cu_outflow_ind[:,:,x,1,1].sum(axis=0))
         plt.title('Cu outflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[1] +' '+  IndexTable.Classification['Scenario_RCP'].Items[1]  )
    #     plt.ylabel('Cu outflow [kt/year]')
 
       #  Figurecounter += 1
         
         plt.subplot2grid((2,2),(1,0))
-        plt.stackplot(time_dsm+1900, Total_cu_outflow_ind[:,:,:,2,0].sum(axis=0))
+        plt.stackplot(x+1900, Total_cu_outflow_ind[:,:,x,2,0].sum(axis=0))
         plt.title('Cu outflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[2] +' '+  IndexTable.Classification['Scenario_RCP'].Items[0]  )
         plt.ylabel('Cu outflow [kt/year]')
 
      #   Figurecounter += 1
         
         plt.subplot2grid((2,2),(1,1))
-        plt.stackplot(time_dsm+1900, Total_cu_outflow_ind[:,:,:,2,1].sum(axis=0))
+        plt.stackplot(x+1900, Total_cu_outflow_ind[:,:,x,2,1].sum(axis=0))
         plt.title('Cu outflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[2] +' '+  IndexTable.Classification['Scenario_RCP'].Items[1]  )
       #  plt.ylabel('Cu outflow [kt/year]')
 
@@ -761,29 +761,29 @@ if 'ind' in SectorList:
         fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(16, 10))
 
         plt.subplot2grid((2,2),(0,0))
-        plt.stackplot(time_dsm+1900, Total_cu_inflow_ind[:,:,:,1,0].sum(axis=0))
-        plt.title('Cu inflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[1] +' '+ IndexTable.Classification['Scenario_RCP'].Items[0]  )
-        plt.ylabel('Cu inflow [kt/year]')
+        plt.stackplot(x+1900, Total_cu_inflow_ind[:,:,x,1,0].sum(axis=0))
+        plt.title(IndexTable.Classification['Scenario'].Items[1] +' '+ IndexTable.Classification['Scenario_RCP'].Items[0]  )
+        plt.ylabel('Cu usage EGTs [kt/year]')
 
       #  Figurecounter += 1
 
         plt.subplot2grid((2,2),(0,1))
-        plt.stackplot(time_dsm+1900, Total_cu_inflow_ind[:,:,:,1,1].sum(axis=0))
-        plt.title('Cu inflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[1] +' '+  IndexTable.Classification['Scenario_RCP'].Items[1]  )
+        plt.stackplot(x+1900, Total_cu_inflow_ind[:,:,x,1,1].sum(axis=0))
+        plt.title(IndexTable.Classification['Scenario'].Items[1] +' '+  IndexTable.Classification['Scenario_RCP'].Items[1]  )
    #     plt.ylabel('Cu outflow [kt/year]')
 
       #  Figurecounter += 1
         
         plt.subplot2grid((2,2),(1,0))
-        plt.stackplot(time_dsm+1900, Total_cu_inflow_ind[:,:,:,2,0].sum(axis=0))
-        plt.title('Cu inflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[2] +' '+  IndexTable.Classification['Scenario_RCP'].Items[0]  )
-        plt.ylabel('Cu inflow [kt/year]')
+        plt.stackplot(x+1900, Total_cu_inflow_ind[:,:,x,2,0].sum(axis=0))
+        plt.title(IndexTable.Classification['Scenario'].Items[2] +' '+  IndexTable.Classification['Scenario_RCP'].Items[0]  )
+        plt.ylabel('Cu usage EGTs [kt/year]')
 
      #   Figurecounter += 1
         
         plt.subplot2grid((2,2),(1,1))
-        plt.stackplot(time_dsm+1900, Total_cu_inflow_ind[:,:,:,2,1].sum(axis=0))
-        plt.title('Cu inflow for Sector industry '+ IndexTable.Classification['Scenario'].Items[2] +' '+  IndexTable.Classification['Scenario_RCP'].Items[1]  )
+        plt.stackplot(x+1900, Total_cu_inflow_ind[:,:,x,2,1].sum(axis=0))
+        plt.title(IndexTable.Classification['Scenario'].Items[2] +' '+  IndexTable.Classification['Scenario_RCP'].Items[1]  )
       #  plt.ylabel('Cu outflow [kt/year]')
 
         #Figurecounter += 1
@@ -847,12 +847,13 @@ SysVar_PY_Manufacturing =  np.einsum('mwgFo,t->tmwgF',RECC_System.ParameterDict[
 SysVar_PY_EoL_Recovery = np.einsum('gomwW,t->tgmwW',RECC_System.ParameterDict['4_PY_EoL_RecoveryRate'].Values[:,:,:,:,:],np.ones((Nt)))
 
 SysVar_PY_Remelting = np.einsum('wmeWcr,t->twmeW',RECC_System.ParameterDict['4_PY_MaterialProductionRemelting'].Values[:,:,:,:,:,:],np.ones((Nt)))
- 
+F_M_1 = np.zeros((Nt,Nl,NI,NS,NR))
+
 F_1_2 = np.zeros((Nt,Nl,NI,NS,NR))
-F_2_3_m = np.zeros((Nt,Nl,NI,NS,NR))
-F_2_3 = np.zeros((Nt, Nl,NS,NR)) 
+F_2_4_m = np.zeros((Nt,Nl,NI,NS,NR))
+F_2_4 = np.zeros((Nt, Nl,NS,NR)) 
 F_3_4 = np.zeros((Nt,Nl,NI,NS,NR))
-F_4_1 = np.zeros((Nt, Nl, Nn,NS,NR))
+F_4_1 = np.zeros((Nt, Nl, NI,NS,NR))
 
 S_2 = np.zeros((Nt,Nm,Nl,NS,NR))
 S_2 = np.zeros((Nt,Nm,Nl,NS,NR))
@@ -875,17 +876,19 @@ Time = np.arange(0,201)+1900
 for S in range(0, NS):
     for R in range(0, NR):
             F_1_2[:,:,:,S,R] = np.einsum('lIt -> tlI',Total_cu_outflow_ind[:,:,:,S,R])
-            F_2_3_m[:,:,:,S,R]= np.einsum('tlg,g -> tlg',F_1_2[:,:,:,S,R],SysVar_PY_EoL_Recovery[0,:,6,5,0]/100)
-            F_2_3[:,:,S,R] = F_2_3_m[:,:,:,S,R].sum(axis=2)
+            F_M_1[:,:,:,S,R] = np.einsum('lIt -> tlI',Total_cu_inflow_ind[:,:,:,S,R])
+
+            F_2_4_m[:,:,:,S,R]= np.einsum('tlg,g -> tlg',F_1_2[:,:,:,S,R],SysVar_PY_EoL_Recovery[0,:,6,5,0]/100)
+            F_2_4[:,:,S,R] = F_2_4_m[:,:,:,S,R].sum(axis=2)
     
-            F_3_4[:,:,:,S,R] = np.einsum('lIt -> tlI',Total_cu_inflow_ind[:,:,:,S,R])
+            F_4_1[:,:,:,S,R] = F_M_1[:,:,:,S,R]- F_2_4_m[:,:,:,S,R]
             En_man_m[:,:,:,S,R] = np.einsum('lIt,I -> tlI',i_Inflow_ind[:,S,R,:,:],SysVar_EnergyDemand_Manufacturing[0,:,0,0]) # Unit:EJ
             En_man[:,:,S,R]  = En_man_m[:,:,:,S,R].sum(axis = 2) # Unit: EJ
             
             
-            En_wmgm[:,:,S,R] = np.einsum('tl,l -> tl',F_2_3[:,:,S,R],SysVar_EnergyDemand_Remelting[0,6,0,:,0,0]+SysVar_EnergyDemand_Remelting[0,6,4,:,0,0])
+            En_wmgm[:,:,S,R] = np.einsum('tl,l -> tl',F_1_2[:,:,:,S,R].sum(axis=2),SysVar_EnergyDemand_Remelting[0,6,0,:,0,0]+SysVar_EnergyDemand_Remelting[0,6,4,:,0,0])
             
-            En_prim[:,:,S,R]  = np.einsum('lt,l -> tl',Total_cu_inflow_ind[:,:,:,S,R].sum(axis=1),SysVar_EnergyDemand_PrimaryProd[0,0,0,:,0,0])
+            En_prim[:,:,S,R]  = np.einsum('tl,l -> tl',F_4_1[:,:,:,S,R].sum(axis=2),SysVar_EnergyDemand_PrimaryProd[0,0,0,:,0,0])
               # Unit: EJ          
             
             En_tot[:,:,S,R] = En_wmgm[:,:,S,R]  + En_prim[:,:,S,R]  + En_man[:,:,S,R] 
@@ -933,7 +936,9 @@ for S in range(0, NS):
             
             plt.plot(Time, En_wmgm_global[:,S,R],'b',label='wmgm')
             plt.plot(Time, En_prim_global[:,S,R],'r',label='prim')
-            plt.plot(Time, En_man_global[:,S,R],'g',label='global')
+            plt.plot(Time, En_man_global[:,S,R],'g',label='man')
+            plt.legend()
+            plt.title('Energy at different stages' + ' Scenario ' + IndexTable.Classification['Scenario'].Items[S] +  IndexTable.Classification['Scenario_RCP'].Items[R]  )
 
             plt.show()
             
@@ -941,8 +946,10 @@ for S in range(0, NS):
             
             plt.figure()
             plt.plot(Time, F_1_2[:,:,:,S,R].sum(axis=1).sum(axis=1),'b',label='12')
-            plt.plot(Time, F_2_3[:,:,S,R].sum(axis=1),'r',label='23')
-            plt.plot(Time, F_3_4[:,:,:,S,R].sum(axis=1).sum(axis=1),'g',label='34')
+            plt.plot(Time, F_2_4[:,:,S,R].sum(axis=1),'r',label='24')
+            plt.plot(Time, F_4_1[:,:,:,S,R].sum(axis=1).sum(axis=1),'g',label='41')
+            plt.title('flows')
+            plt.legend()
             plt.show()
             
             
@@ -962,8 +969,8 @@ Emissions_offset_SSP2 = Energy_offset_SSP2[:] * SysVar_GHG_Intensity_Electricity
 
 Emissions_SSP2_mitigated = np.array(dEmissions_SSP2_Mitigated.iloc[0])
 #
-#x2 = np.arange(1986,2111)
-#x3 = np.arange(2006,2101)
+x2 = np.arange(1986,2111)
+x3 = np.arange(2006,2101)
 #plt.figure()
 #plt.plot(x2,dEmissions_SSP2_Baseline.iloc[0])
 #plt.plot(x2,dEmissions_SSP2_Mitigated.iloc[0])
@@ -997,9 +1004,9 @@ Emissions_SSP2_mitigated = np.array(dEmissions_SSP2_Mitigated.iloc[0])
 #
 #plt.show()
 #
-#legend1 = ['SSP 2 unmitigated','SSP 2 RCP2.6 ']
+legend1 = ['SSP 2 unmitigated','SSP 2 RCP2.6 ']
 #
-#legend2 = ['Industrial specific useful energy offset']
+legend2 = ['Industrial specific useful energy offset']
 
 fig, ax1 = plt.subplots()
 
@@ -1011,11 +1018,11 @@ ax1.plot(x+1900, Total_cu_inflow_ind[:,:,x,2,0].sum(axis=0).sum(axis=0),'k')
 #plt.plot(x+1900, Total_cu_inflow_ind[:,:,x,1,1].sum(axis=0).sum(axis=0),'g--')
 ax1.plot(x+1900, Total_cu_inflow_ind[:,:,x,2,1].sum(axis=0).sum(axis=0),'k--')
 ax1.set_ylabel('Cu usage [kt/year]')
+ax2 = ax1.twinx()
 ax2.tick_params(axis='y', labelcolor=color)
 
 
 
-ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 color = 'tab:red'
 ax2.plot(x3,((((Emissions_SSP2_mitigated[20:115]+Emissions_offset_SSP2 [106:])/Emissions_SSP2_mitigated[20:115])*100)-100),'r')
 
